@@ -1,10 +1,10 @@
-package com.funsol.iap.billing.helper
+package com.mmt.iap.billing.helper
 
 import com.android.billingclient.api.BillingClient
-import com.funsol.iap.billing.helper.BillingData.allProducts
-import com.funsol.iap.billing.helper.BillingData.billingEventListener
-import com.funsol.iap.billing.model.ErrorType
-import com.funsol.iap.billing.model.ProductPriceInfo
+import com.mmt.iap.billing.helper.BillingData.allProducts
+import com.mmt.iap.billing.helper.BillingData.billingEventListener
+import com.mmt.iap.billing.model.ErrorType
+import com.mmt.iap.billing.model.ProductPriceInfo
 
 class ProductPrices {
 	

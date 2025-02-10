@@ -1,11 +1,11 @@
-package com.funsol.iap.billing.helper
+package com.mmt.iap.billing.helper
 
 import com.android.billingclient.api.Purchase
-import com.funsol.iap.billing.model.FunsolPurchase
+import com.mmt.iap.billing.model.MyPurchase
 
-fun List<Purchase>.toFunsolPurchases(): List<FunsolPurchase> {
+fun List<Purchase>.toMyPurchases(): List<MyPurchase> {
     return this.map { purchase ->
-        FunsolPurchase(
+        MyPurchase(
             products = purchase.products.toMutableList(),
             purchaseState = purchase.purchaseState,
             purchaseToken = purchase.purchaseToken,
@@ -23,8 +23,8 @@ fun List<Purchase>.toFunsolPurchases(): List<FunsolPurchase> {
     }
 }
 
-fun Purchase.toFunsolPurchase(): FunsolPurchase {
-    return FunsolPurchase(
+fun Purchase.toMyPurchase(): MyPurchase {
+    return MyPurchase(
         products = this.products.toMutableList(),
         purchaseState = this.purchaseState,
         purchaseToken = this.purchaseToken,
@@ -37,7 +37,6 @@ fun Purchase.toFunsolPurchase(): FunsolPurchase {
         purchaseTime = this.purchaseTime,
         quantity = this.quantity,
         signature = this.signature,
-        skus = this.skus
-
+        skus = this.products
     )
 }

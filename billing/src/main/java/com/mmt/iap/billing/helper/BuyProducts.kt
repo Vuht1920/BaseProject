@@ -1,4 +1,4 @@
-package com.funsol.iap.billing.helper
+package com.mmt.iap.billing.helper
 
 import android.app.Activity
 import com.android.billingclient.api.AcknowledgePurchaseParams
@@ -6,15 +6,15 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.Purchase
-import com.funsol.iap.billing.helper.BillingData.billingClient
-import com.funsol.iap.billing.helper.BillingData.billingClientListener
-import com.funsol.iap.billing.helper.BillingData.billingEventListener
-import com.funsol.iap.billing.helper.BillingData.consumeAbleProductIds
-import com.funsol.iap.billing.helper.BillingData.lastPurchasedProduct
-import com.funsol.iap.billing.helper.BillingData.purchasedInAppProductList
-import com.funsol.iap.billing.helper.BillingData.purchasedSubsProductList
-import com.funsol.iap.billing.helper.billingPrefernces.PurchasedProduct
-import com.funsol.iap.billing.model.ErrorType
+import com.mmt.iap.billing.helper.BillingData.billingClient
+import com.mmt.iap.billing.helper.BillingData.billingClientListener
+import com.mmt.iap.billing.helper.BillingData.billingEventListener
+import com.mmt.iap.billing.helper.BillingData.consumeAbleProductIds
+import com.mmt.iap.billing.helper.BillingData.lastPurchasedProduct
+import com.mmt.iap.billing.helper.BillingData.purchasedInAppProductList
+import com.mmt.iap.billing.helper.BillingData.purchasedSubsProductList
+import com.mmt.iap.billing.helper.billingPrefernces.PurchasedProduct
+import com.mmt.iap.billing.model.ErrorType
 
 class BuyProducts {
 	
@@ -209,7 +209,7 @@ class BuyProducts {
 					else                            -> logFunsolBilling("Unknown product type while acknowledging purchase")
 				}
 				billingClientListener?.onPurchasesUpdated()
-				billingEventListener?.onPurchaseAcknowledged(purchase.toFunsolPurchase())
+				billingEventListener?.onPurchaseAcknowledged(purchase.toMyPurchase())
 			} else {
 				logFunsolBilling("Acknowledge error: ${result.debugMessage} (code: ${result.responseCode})")
 				billingEventListener?.onBillingError(ErrorType.ACKNOWLEDGE_ERROR)
@@ -235,7 +235,7 @@ class BuyProducts {
 		billingClient.consumeAsync(consumeParams) { result, _ ->
 			if (result.responseCode == BillingClient.BillingResponseCode.OK) {
 				logFunsolBilling("Purchase consumed")
-				billingEventListener?.onPurchaseConsumed(purchase.toFunsolPurchase())
+				billingEventListener?.onPurchaseConsumed(purchase.toMyPurchase())
 			} else {
 				logFunsolBilling("Failed to consume purchase: ${result.debugMessage} (code: ${result.responseCode})")
 				billingEventListener?.onBillingError(ErrorType.CONSUME_ERROR)

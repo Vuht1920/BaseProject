@@ -1,8 +1,6 @@
-package com.funsol.iap.billing.helper.billingPrefernces
+package com.mmt.iap.billing.helper.billingPrefernces
 
 import android.content.Context
-import android.util.Log
-import com.funsol.iap.billing.helper.logFunsolBilling
 
 class PurchasedHistoryUtils(private val context: Context) {
 	

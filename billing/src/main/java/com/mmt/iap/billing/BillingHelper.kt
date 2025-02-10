@@ -1,36 +1,43 @@
-package com.funsol.iap.billing
+package com.mmt.iap.billing
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
-import com.android.billingclient.api.*
-import com.funsol.iap.billing.helper.BillingData.allProducts
-import com.funsol.iap.billing.helper.BillingData.billingClient
-import com.funsol.iap.billing.helper.BillingData.billingClientListener
-import com.funsol.iap.billing.helper.BillingData.billingEventListener
-import com.funsol.iap.billing.helper.BillingData.consumeAbleProductIds
-import com.funsol.iap.billing.helper.BillingData.enableLog
-import com.funsol.iap.billing.helper.BillingData.inAppProductIds
-import com.funsol.iap.billing.helper.BillingData.isClientReady
-import com.funsol.iap.billing.helper.BillingData.lastPurchasedProduct
-import com.funsol.iap.billing.helper.BillingData.purchasedInAppProductList
-import com.funsol.iap.billing.helper.BillingData.purchasedSubsProductList
-import com.funsol.iap.billing.helper.BillingData.purchasesUpdatedListener
-import com.funsol.iap.billing.helper.BillingData.subProductIds
-import com.funsol.iap.billing.helper.BuyProducts
-import com.funsol.iap.billing.helper.ProductDetail
-import com.funsol.iap.billing.helper.ProductPrices
-import com.funsol.iap.billing.helper.billingPrefernces.BillingSharedPrefsManager
-import com.funsol.iap.billing.helper.billingPrefernces.PurchasedHistoryUtils
-import com.funsol.iap.billing.helper.billingPrefernces.PurchasedProduct
-import com.funsol.iap.billing.helper.logFunsolBilling
-import com.funsol.iap.billing.helper.toFunsolPurchases
-import com.funsol.iap.billing.listeners.BillingClientListener
-import com.funsol.iap.billing.listeners.BillingEventListener
-import com.funsol.iap.billing.model.ErrorType
-import com.funsol.iap.billing.model.ProductPriceInfo
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.mmt.iap.billing.helper.BillingData.allProducts
+import com.mmt.iap.billing.helper.BillingData.billingClient
+import com.mmt.iap.billing.helper.BillingData.billingClientListener
+import com.mmt.iap.billing.helper.BillingData.billingEventListener
+import com.mmt.iap.billing.helper.BillingData.consumeAbleProductIds
+import com.mmt.iap.billing.helper.BillingData.enableLog
+import com.mmt.iap.billing.helper.BillingData.inAppProductIds
+import com.mmt.iap.billing.helper.BillingData.isClientReady
+import com.mmt.iap.billing.helper.BillingData.lastPurchasedProduct
+import com.mmt.iap.billing.helper.BillingData.purchasedInAppProductList
+import com.mmt.iap.billing.helper.BillingData.purchasedSubsProductList
+import com.mmt.iap.billing.helper.BillingData.purchasesUpdatedListener
+import com.mmt.iap.billing.helper.BillingData.subProductIds
+import com.mmt.iap.billing.helper.BuyProducts
+import com.mmt.iap.billing.helper.ProductDetail
+import com.mmt.iap.billing.helper.ProductPrices
+import com.mmt.iap.billing.helper.billingPrefernces.SharedPrefsManager
+import com.mmt.iap.billing.helper.billingPrefernces.PurchasedHistoryUtils
+import com.mmt.iap.billing.helper.billingPrefernces.PurchasedProduct
+import com.mmt.iap.billing.helper.logFunsolBilling
+import com.mmt.iap.billing.helper.toMyPurchases
+import com.mmt.iap.billing.listeners.BillingClientListener
+import com.mmt.iap.billing.listeners.BillingEventListener
+import com.mmt.iap.billing.model.ErrorType
+import com.mmt.iap.billing.model.ProductPriceInfo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -41,13 +48,13 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 
-class FunSolBillingHelper(private val context: Context) {
+class BillingHelper(private val context: Context) {
 	
 	private val productPrices = ProductPrices()
 	private val productDetail = ProductDetail()
 	private val buyProducts = BuyProducts()
 	private val purchasedHistoryUtils = PurchasedHistoryUtils(context)
-	private val billingSharedPrefsManager = BillingSharedPrefsManager(context)
+	private val sharedPrefsManager = SharedPrefsManager(context)
 	
 	private fun startConnection() {
 		logFunsolBilling("Connect start with Google Play")
@@ -214,7 +221,7 @@ class FunSolBillingHelper(private val context: Context) {
 		queryAndHandlePurchases(BillingClient.ProductType.INAPP)
 	}
 	
-	fun setSubProductIds(productIds: MutableList<String>): FunSolBillingHelper {
+	fun setSubProductIds(productIds: MutableList<String>): BillingHelper {
 		subProductIds.addAll(productIds)
 		return this
 	}
@@ -236,7 +243,7 @@ class FunSolBillingHelper(private val context: Context) {
 									buyProducts.handlePurchase(purchase = purchase)
 								}
 							}
-							billingEventListener?.onProductsPurchased(purchasedSubsProductList.toFunsolPurchases())
+							billingEventListener?.onProductsPurchased(purchasedSubsProductList.toMyPurchases())
 						}
 					}
 					
@@ -442,12 +449,12 @@ class FunSolBillingHelper(private val context: Context) {
 	}
 	
 	private fun updatePremiumStatus(context: Context) {
-		val isPremium = FunSolBillingHelper(context).isInAppPremiumUser() || FunSolBillingHelper(context).isSubsPremiumUser()
-		billingSharedPrefsManager.setPremiumStatus(isPremium = isPremium)
+		val isPremium = BillingHelper(context).isInAppPremiumUser() || BillingHelper(context).isSubsPremiumUser()
+		sharedPrefsManager.setPremiumStatus(isPremium = isPremium)
 //		return isPremium
 	}
 	
-	val isPremiumUser get() = billingSharedPrefsManager.isUserPremium()
+	val isPremiumUser get() = sharedPrefsManager.isUserPremium()
 	
 	fun isInAppPremiumUserByProductId(productId: String): Boolean {
 		return purchasedInAppProductList.any { purchase ->
@@ -455,12 +462,12 @@ class FunSolBillingHelper(private val context: Context) {
 		}
 	}
 	
-	fun setInAppProductIds(productIds: MutableList<String>): FunSolBillingHelper {
+	fun setInAppProductIds(productIds: MutableList<String>): BillingHelper {
 		inAppProductIds.addAll(productIds)
 		return this
 	}
 	
-	fun setConsumableProductIds(productIds: MutableList<String>): FunSolBillingHelper {
+	fun setConsumableProductIds(productIds: MutableList<String>): BillingHelper {
 		consumeAbleProductIds.addAll(productIds)
 		return this
 	}
@@ -481,7 +488,7 @@ class FunSolBillingHelper(private val context: Context) {
 		return isClientReady
 	}
 	
-	fun enableLogging(isEnableLog: Boolean = true): FunSolBillingHelper {
+	fun enableLogging(isEnableLog: Boolean = true): BillingHelper {
 		enableLog = isEnableLog
 		return this
 	}
@@ -498,12 +505,12 @@ class FunSolBillingHelper(private val context: Context) {
 		billingClient = null
 	}
 	
-	fun setBillingEventListener(billingEventListeners: BillingEventListener?): FunSolBillingHelper {
+	fun setBillingEventListener(billingEventListeners: BillingEventListener?): BillingHelper {
 		billingEventListener = billingEventListeners
 		return this
 	}
 	
-	fun setBillingClientListener(billingClientListeners: BillingClientListener?): FunSolBillingHelper {
+	fun setBillingClientListener(billingClientListeners: BillingClientListener?): BillingHelper {
 		billingClientListener = billingClientListeners
 		return this
 	}

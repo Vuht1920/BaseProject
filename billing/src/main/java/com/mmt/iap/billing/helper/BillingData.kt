@@ -1,12 +1,12 @@
-package com.funsol.iap.billing.helper
+package com.mmt.iap.billing.helper
 
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
-import com.funsol.iap.billing.helper.billingPrefernces.PurchasedProduct
-import com.funsol.iap.billing.listeners.BillingClientListener
-import com.funsol.iap.billing.listeners.BillingEventListener
+import com.mmt.iap.billing.helper.billingPrefernces.PurchasedProduct
+import com.mmt.iap.billing.listeners.BillingClientListener
+import com.mmt.iap.billing.listeners.BillingEventListener
 
 object BillingData {
 	

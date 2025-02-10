@@ -1,7 +1,7 @@
-package com.funsol.iap.billing.helper
+package com.mmt.iap.billing.helper
 
 import android.util.Log
-import com.funsol.iap.billing.helper.BillingData.enableLog
+import com.mmt.iap.billing.helper.BillingData.enableLog
 
 fun logFunsolBilling(message: String) {
 

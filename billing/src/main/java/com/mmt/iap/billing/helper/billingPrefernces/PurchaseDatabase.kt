@@ -1,4 +1,4 @@
-package com.funsol.iap.billing.helper.billingPrefernces
+package com.mmt.iap.billing.helper.billingPrefernces
 
 import android.content.Context
 import androidx.room.Database

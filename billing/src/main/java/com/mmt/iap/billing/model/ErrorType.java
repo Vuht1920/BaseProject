@@ -1,4 +1,4 @@
-package com.funsol.iap.billing.model;
+package com.mmt.iap.billing.model;
 
 import androidx.annotation.Keep;
 

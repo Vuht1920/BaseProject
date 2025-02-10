@@ -1,4 +1,4 @@
-package com.funsol.iap.billing.helper.billingPrefernces
+package com.mmt.iap.billing.helper.billingPrefernces
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

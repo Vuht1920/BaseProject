@@ -1,4 +1,4 @@
-package com.funsol.iap.billing.listeners
+package com.mmt.iap.billing.listeners
 
 interface BillingClientListener {
     fun onPurchasesUpdated()
