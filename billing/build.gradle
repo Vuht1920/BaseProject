@@ -1,0 +1,69 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.devtoolsKsp)
+  
+}
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion "33.0.0"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 34
+
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    namespace 'com.funsol.iap.billing'
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.android.billingclient:billing:7.0.0'
+
+
+    // Room DB
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation 'androidx.room:room-ktx:2.6.1'
+    implementation("androidx.room:room-runtime:2.6.1")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.Funsol-Projects'
+                artifactId = 'Funsol-Billing-Helper'
+                version = 'v2.0.5'
+            }
+            debug(MavenPublication) {
+                from components.debug
+                groupId = 'com.github.Funsol-Projects'
+                artifactId = 'Funsol-Billing-Helper'
+                version = 'v2.0.5'
+            }
+        }
+    }
+}
