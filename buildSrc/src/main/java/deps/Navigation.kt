@@ -3,7 +3,7 @@ package deps
 object Navigation : Dependency() {
 
     object Versions {
-        const val navVersion = "1.15.0"
+        const val navVersion = "2.8.6"
     }
 
     private const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.navVersion}"

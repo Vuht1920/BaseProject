@@ -92,7 +92,7 @@ dependencies {
     dependOn(
         deps.AndroidX,
         deps.Hilt,
-//        deps.Navigation,
+        deps.Navigation,
         deps.Log,
         deps.Glide,
         deps.Coroutine,
