@@ -9,7 +9,7 @@ object BlankJUtil : Dependency() {
     private const val blankj = "com.blankj:utilcode:${Versions.VERSION}"
 
 
-    override fun implementations() = listOf(
+    override fun api() = listOf(
         blankj
     )
 }

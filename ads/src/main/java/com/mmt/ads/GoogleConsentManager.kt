@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -17,8 +18,6 @@ import com.google.android.ump.FormError
 import com.google.android.ump.UserMessagingPlatform
 import com.mmt.ads.config.AdsConfig
 import com.mmt.ads.utils.Utils
-import com.utility.SharedPreference
-import com.utility.UtilsLib
 import java.util.Random
 
 /**
@@ -26,10 +25,9 @@ import java.util.Random
  * management platform) as one solution to capture consent for users in GDPR impacted countries.
  * This is an example and you can choose another consent management platform to capture consent.
  */
-class GoogleConsentManager private constructor (context: Context) {
+class GoogleConsentManager private constructor(context: Context) {
     companion object {
         private const val TAG = "GoogleConsentManager"
-        private const val PREF_CONSENT_ACCEPTED = "pref_consent_accepted"
         const val TIMEOUT = 5_000L
 
         @JvmStatic
@@ -49,6 +47,7 @@ class GoogleConsentManager private constructor (context: Context) {
     private var mConsentForm: ConsentForm? = null
     private var mLoadingStatus: LoadConsentStatus = LoadConsentStatus.NONE
     private val mListeners: HashSet<ConsentListener?> = hashSetOf()
+    private val refRepository by lazy { PrefRepository.getInstance(context) }
 
     private val mHandler = Handler(Looper.getMainLooper())
 
@@ -72,7 +71,7 @@ class GoogleConsentManager private constructor (context: Context) {
      * @return false: otherwise
      * */
     fun isConsentStatusAccepted(): Boolean {
-        return SharedPreference.getBoolean(appContext, PREF_CONSENT_ACCEPTED, false)
+        return refRepository.isConsentAccepted
     }
 
     /**
@@ -115,9 +114,9 @@ class GoogleConsentManager private constructor (context: Context) {
                  * If consentStatus = NOT_REQUIRED -> user not in GEOGRAPHY_EEA -> do not need show ConsentForm -> can show Ad immediate
                  * => Save consent status to pref before callback invoked -> to init & show OPA after consent status updated
                  * */
-                SharedPreference.setBoolean(appContext, PREF_CONSENT_ACCEPTED, true)
+                refRepository.setConsentAccepted(true)
             } else if (isRequireConsentForm()) {
-                SharedPreference.setBoolean(appContext, PREF_CONSENT_ACCEPTED, false)
+                refRepository.setConsentAccepted(false)
             }
 
             mLoadingStatus = LoadConsentStatus.UPDATED
@@ -158,7 +157,7 @@ class GoogleConsentManager private constructor (context: Context) {
         if (AdsConfig.getInstance().isTestGDPR) {
             Log.e(TAG, "\nDEBUG consentDebugGeography = $consentDebugGeography")
             val debugSettings =
-                ConsentDebugSettings.Builder(appContext).setDebugGeography(consentDebugGeography).addTestDeviceHashedId(UtilsLib.getDeviceId(appContext))
+                ConsentDebugSettings.Builder(appContext).setDebugGeography(consentDebugGeography).addTestDeviceHashedId(Utils.getDeviceId(appContext))
                     .build()
             params.setConsentDebugSettings(debugSettings)
         }
@@ -173,9 +172,9 @@ class GoogleConsentManager private constructor (context: Context) {
                  * If consentStatus = NOT_REQUIRED -> user not in GEOGRAPHY_EEA -> do not need show ConsentForm -> can show Ad immediate
                  * => Save consent status to pref before callback invoked -> to init & show OPA after consent status updated
                  * */
-                SharedPreference.setBoolean(appContext, PREF_CONSENT_ACCEPTED, true)
+                refRepository.setConsentAccepted(true)
             } else if (isRequireConsentForm()) {
-                SharedPreference.setBoolean(appContext, PREF_CONSENT_ACCEPTED, false)
+                refRepository.setConsentAccepted(false)
             }
 
             if (isRequireConsentForm()) {
@@ -249,11 +248,11 @@ class GoogleConsentManager private constructor (context: Context) {
 
         countDownTimer?.cancel()
         val delayTime = Random().nextInt(2).toLong() + 5
-        UtilsLib.showToast(appContext, "$delayTime seconds will show GDPR form")
+        Toast.makeText(appContext, "$delayTime seconds will show GDPR form", Toast.LENGTH_SHORT).show()
 
         countDownTimer = object : CountDownTimer(delayTime * 1000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                UtilsLib.showToast(appContext, "${millisUntilFinished / 1000} seconds will show GDPR form")
+                Toast.makeText(appContext, "${millisUntilFinished / 1000} seconds will show GDPR form", Toast.LENGTH_SHORT).show()
             }
 
             override fun onFinish() {
@@ -293,7 +292,7 @@ class GoogleConsentManager private constructor (context: Context) {
         Log.e(TAG, "reset")
         mConsentInformation.reset()
         mConsentForm = null
-        SharedPreference.setBoolean(appContext, PREF_CONSENT_ACCEPTED, false)
+        refRepository.setConsentAccepted(false)
     }
 
 }

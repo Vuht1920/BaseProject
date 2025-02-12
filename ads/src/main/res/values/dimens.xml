@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="native_medium_height">260dp</dimen>
+    <dimen name="native_exit_dialog_height">250dp</dimen>
+    <dimen name="native_content_media_height">120dp</dimen>
+</resources>

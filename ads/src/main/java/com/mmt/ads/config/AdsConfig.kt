@@ -4,12 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.os.SystemClock
 import com.mmt.ads.GoogleConsentManager
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_FREQ_CAP_APP_OPEN_AD_IN_MS
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_FREQ_CAP_INTER_IN_MS
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_FREQ_CAP_INTER_OPA_IN_MS
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS
-import com.mmt.ads.PreferenceRepository.PreferenceKeys.DEFAULT_WAITING_TIME_WHEN_LOAD_FAILED_IN_MS
+import com.mmt.ads.PrefRepository
+import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS
+import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS
+import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_WAITING_TIME_WHEN_LOAD_FAILED_IN_MS
+import com.mmt.ads.models.AdsType
+import com.mmt.ads.utils.AdDebugLog
 import org.json.JSONObject
 
 @Suppress("FunctionName")
@@ -20,7 +20,6 @@ class AdsConfig {
             AdsConfig()
         }
 
-        @JvmStatic
         fun getInstance(): AdsConfig {
             return sInstance
         }
@@ -48,9 +47,8 @@ class AdsConfig {
     var isCacheAds = false
     var isTestCacheAdsTime = false
     var freqAppOpenAdInMs: Long = 0
-        set(value) {
-            field = value
-        }
+
+    private val prefRepository by lazy { PrefRepository.getInstance(mApplication!!) }
 
     fun mustInit(): Boolean {
         return mApplication == null
@@ -59,15 +57,15 @@ class AdsConfig {
     // Init
     fun init(application: Application?): AdsConfig {
         mApplication = application
-        freqAppOpenAdInMs = SharedPreference.getLong(application, FREQ_CAP_APP_OPEN_AD_IN_MS, DEFAULT_FREQ_CAP_APP_OPEN_AD_IN_MS)
-        waitingTimeWhenLoadFailedInMs = SharedPreference.getLong(mApplication, WAITING_TIME_WHEN_LOAD_FAILED, DEFAULT_WAITING_TIME_WHEN_LOAD_FAILED_IN_MS)
+        freqAppOpenAdInMs = prefRepository.freqCapAppOpenAdInMs
+        waitingTimeWhenLoadFailedInMs = prefRepository.waitingTimeWhenLoadFailedInMs
         return this@AdsConfig
     }
 
     fun initAdsState(context: Context): AdsConfig {
         if (mAdsEnableState.isEmpty()) {
-            val data = SharedPreference.getString(context, ADS_ENABLE_STATE, "{}")
-            data?.let { setAdsEnableState(it) }
+            val data = prefRepository.adsEnableState
+            setAdsEnableState(data)
         }
         return this@AdsConfig
     }
@@ -128,7 +126,7 @@ class AdsConfig {
                 }
                 return states
             } catch (e: Exception) {
-                DebugLog.loge(e)
+                AdDebugLog.loge(e)
             }
         }
         return LinkedHashMap()
@@ -147,7 +145,7 @@ class AdsConfig {
         try {
             if (!jsonData.isNullOrEmpty()) {
                 // Save config to pref
-                SharedPreference.setString(mApplication, ADS_ENABLE_STATE, jsonData)
+                prefRepository.setAdsEnableState(jsonData)
                 val states: Map<String, Boolean> = parseAdsStateConfig(jsonData)
                 mAdsEnableState.clear()
                 mAdsEnableState.putAll(states)
@@ -160,7 +158,7 @@ class AdsConfig {
 
     fun _setWaitingTimeWhenLoadFailedInMs(timeInMs: Long): AdsConfig {
         waitingTimeWhenLoadFailedInMs = timeInMs
-        SharedPreference.setLong(mApplication, WAITING_TIME_WHEN_LOAD_FAILED, timeInMs)
+        prefRepository.setWaitingTimeWhenLoadFailedInMs(timeInMs)
         return this@AdsConfig
     }
 
@@ -186,12 +184,7 @@ class AdsConfig {
 
     fun _setCacheAd(cacheAd: Boolean): AdsConfig {
         this.isCacheAds = cacheAd
-        SharedPreference.setLong(mApplication, FREQ_CAP_APP_OPEN_AD_IN_MS, freqAppOpenAdInMs)
-        return this@AdsConfig
-    }
-
-    fun _setAdLoadingOption(option: AdLoadingOption): AdsConfig {
-        this.adLoadingOption = option
+        prefRepository.setFreqCapAppOpenAdInMs(freqAppOpenAdInMs)
         return this@AdsConfig
     }
 
@@ -200,7 +193,7 @@ class AdsConfig {
      * */
     fun setInterOPAProgressDelayInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, INTER_OPA_PROGRESS_DELAY_IN_MS, time)
+            prefRepository.setInterOPAProgressDelayInMs(time)
         }
         return this@AdsConfig
     }
@@ -210,7 +203,7 @@ class AdsConfig {
      * */
     fun setInterOPASplashDelayInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, INTER_OPA_SPLASH_DELAY_IN_MS, time)
+            prefRepository.setInterOPASplashDelayInMs(time)
         }
         return this@AdsConfig
     }
@@ -220,7 +213,7 @@ class AdsConfig {
      * */
     fun setInterFreqInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, FREQ_CAP_INTER_IN_MS, time)
+            prefRepository.setFreqCapInterInMs(time)
         }
         return this@AdsConfig
     }
@@ -230,7 +223,7 @@ class AdsConfig {
      * */
     fun setFreqInterOPAInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, FREQ_INTER_OPA_IN_MILLISECONDS, time)
+            prefRepository.setFreqInterOPAInMilliseconds(time)
         }
         return this@AdsConfig
     }
@@ -240,7 +233,7 @@ class AdsConfig {
      * */
     fun saveInterOPAShowedTimestamp(): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, INTERSTITIAL_OPA_SHOWED_TIMESTAMP, SystemClock.elapsedRealtime())
+            prefRepository.setLastTimeOPAShowTimeStamp(SystemClock.elapsedRealtime())
         }
         return this@AdsConfig
     }
@@ -250,7 +243,7 @@ class AdsConfig {
      * */
     fun setInterMinimumShowTimeInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, MINIMUM_TIME_SHOW_INTER_IN_MS, time)
+            prefRepository.setWaitingTimeWhenLoadFailedInMs(time)
         }
         return this@AdsConfig
     }
@@ -260,8 +253,8 @@ class AdsConfig {
      * */
     fun isAdEnable(type: AdsType): Boolean {
         var isEnable = false
-        if (mAdsEnableState.containsKey(type._value)) {
-            val enable = mAdsEnableState[type._value]
+        if (mAdsEnableState.containsKey(type.value)) {
+            val enable = mAdsEnableState[type.value]
             isEnable = enable != null && enable
         }
 //        AdDebugLog.logd("AdsType ${type.value}: isAdEnable = $isEnable")
@@ -274,11 +267,11 @@ class AdsConfig {
      * return true if current time minus the latest time OPA displayed > FREQ_INTER_OPA_IN_MILLISECONDS has been set
      * */
     fun canShowOPA(): Boolean {
-        val freqInterOPAInMilliseconds = SharedPreference.getLong(mApplication, FREQ_INTER_OPA_IN_MILLISECONDS, DEFAULT_FREQ_CAP_INTER_OPA_IN_MS)
+        val freqInterOPAInMilliseconds = prefRepository.freqInterOPAInMilliseconds
         if (freqInterOPAInMilliseconds == 0L) {
             return true
         }
-        val lastTimeOPAShow = SharedPreference.getLong(mApplication, INTERSTITIAL_OPA_SHOWED_TIMESTAMP, DEFAULT_FREQ_CAP_INTER_OPA_IN_MS)
+        val lastTimeOPAShow = prefRepository.interstitialShowedTimestamp
         return SystemClock.elapsedRealtime() - lastTimeOPAShow >= freqInterOPAInMilliseconds
     }
 
@@ -287,7 +280,7 @@ class AdsConfig {
     * */
     val interOPASplashDelayInMs: Long
         get() = if (mApplication != null) {
-            SharedPreference.getLong(mApplication, INTER_OPA_SPLASH_DELAY_IN_MS, DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS)
+            prefRepository.interOPASplashDelayInMs
         } else DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS
 
     /*
@@ -295,7 +288,7 @@ class AdsConfig {
     * */
     val interOPAProgressDelayInMs: Long
         get() = if (mApplication != null) {
-            SharedPreference.getLong(mApplication, INTER_OPA_PROGRESS_DELAY_IN_MS, DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS)
+            prefRepository.interOPAProgressDelayInMs
         } else DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS
 
     /*
@@ -303,19 +296,19 @@ class AdsConfig {
      * */
     fun saveInterstitialShowedTimestamp() {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, INTERSTITIAL_SHOWED_TIMESTAMP, SystemClock.elapsedRealtime())
+            prefRepository.setInterstitialShowedTimestamp(SystemClock.elapsedRealtime())
         }
     }
 
     private val interstitialShowedTimestamp: Long
         get() = if (mApplication != null) {
-            SharedPreference.getLong(mApplication, INTERSTITIAL_SHOWED_TIMESTAMP, 0L)
+            prefRepository.interstitialShowedTimestamp
         } else 0L
 
     fun canShowInterstitial(): Boolean {
         if (mApplication != null) {
             val timePassed = SystemClock.elapsedRealtime() - interstitialShowedTimestamp
-            return timePassed >= SharedPreference.getLong(mApplication, FREQ_CAP_INTER_IN_MS, DEFAULT_FREQ_CAP_INTER_IN_MS)
+            return timePassed >= prefRepository.freqCapInterInMs
         }
         return false
     }
@@ -325,13 +318,13 @@ class AdsConfig {
      * */
     fun saveAppOpenAdShowedTimestamp() {
         if (mApplication != null) {
-            SharedPreference.setLong(mApplication, APP_OPEN_AD_SHOWED_TIMESTAMP, SystemClock.elapsedRealtime())
+            prefRepository.setAppOpenAdShowedTimeStampKey(SystemClock.elapsedRealtime())
         }
     }
 
     private val appOpenAdShowedTimestamp: Long
         get() = if (mApplication != null) {
-            SharedPreference.getLong(mApplication, APP_OPEN_AD_SHOWED_TIMESTAMP, 0L)
+            prefRepository.appOpenAdShowedTimeStamp
         } else 0L
 
     fun canShowAppOpenAd(): Boolean {

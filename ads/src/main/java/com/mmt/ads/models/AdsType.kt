@@ -1,4 +1,4 @@
-package com.mmt.ads.model
+package com.mmt.ads.models
 
 enum class AdsType(var value: String) {
     BANNER_IN_APP("banner_in_app"),

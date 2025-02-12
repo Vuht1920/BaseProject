@@ -1,6 +1,5 @@
 package com.mmt.ads.wapper
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
@@ -19,10 +18,9 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.mmt.ads.AdsModule
 import com.mmt.ads.R
 import com.mmt.ads.config.AdsConfig
-import com.mmt.ads.model.LoadingState
+import com.mmt.ads.models.LoadingState
 import com.mmt.ads.utils.AdDebugLog
 import com.mmt.ads.utils.AdsConstants
 import com.mmt.ads.views.ProgressDialogFragment

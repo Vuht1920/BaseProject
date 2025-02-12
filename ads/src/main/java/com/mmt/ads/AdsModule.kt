@@ -4,8 +4,8 @@ import android.app.Application
 import android.os.SystemClock
 import com.google.android.gms.ads.MobileAds
 import com.mmt.ads.config.AdsConfig
-import com.mmt.ads.model.AdsId
-import com.mmt.ads.model.LoadingState
+import com.mmt.ads.models.AdsId
+import com.mmt.ads.models.LoadingState
 import com.mmt.ads.utils.AdDebugLog
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -64,9 +64,9 @@ class AdsModule() {
 
             AdsConfig.getInstance().initAdsState(application)
 
-            if (mAdsIdConfigList.isEmpty()) {
-                initResources(application)
-            }
+//            if (mAdsIdConfigList.isEmpty()) {
+//                initResources(application)
+//            }
 
             if (initializeCompleted()) {
                 callback?.onInitializeCompleted()

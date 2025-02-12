@@ -12,8 +12,8 @@ import android.widget.RelativeLayout
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.mmt.ads.config.AdsConfig
-import com.mmt.ads.model.AdsId
-import com.mmt.ads.model.AdsType
+import com.mmt.ads.models.AdsId
+import com.mmt.ads.models.AdsType
 import com.mmt.ads.utils.AdDebugLog.logd
 import com.mmt.ads.utils.AdDebugLog.loge
 import java.util.Locale

@@ -1,4 +1,4 @@
-package com.mmt.ads.model
+package com.mmt.ads.models
 
 enum class LoadingState {
     NONE, LOADING, FINISHED

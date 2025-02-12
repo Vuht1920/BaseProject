@@ -1,4 +1,5 @@
 import deps.dependOn
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -12,7 +13,6 @@ android {
     defaultConfig {
         applicationId = "com.mmt.iap.billing"
         minSdk = Build.minSdk
-        targetSdk = Build.targetSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,8 +33,6 @@ android {
 }
 
 dependencies {
-    dependOn(
-        deps.Room,
-        deps.Billing
-    )
+    dependOn(deps.Room, deps.Billing)
+    api(project(":common"))
 }

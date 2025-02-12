@@ -24,7 +24,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.mmt.ads.R
 import com.mmt.ads.config.AdsConfig
-import com.mmt.ads.model.LoadingState
+import com.mmt.ads.models.CountingState
+import com.mmt.ads.models.LoadingState
 import com.mmt.ads.utils.AdDebugLog
 import com.mmt.ads.utils.AdsConstants
 import com.mmt.ads.views.ProgressDialogFragment

@@ -1,4 +1,3 @@
-import Build.applicationId
 import deps.dependOn
 
 plugins {
@@ -7,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.mmt.ads"
-    compileSdk = Build.compileSdk
+    namespace = "com.mmt.common"
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = Build.minSdk
+        minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -34,10 +33,14 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    dependOn(deps.Ads)
-    api(project(":common"))
+    dependOn(
+        deps.AndroidX,
+        deps.BlankJUtil,
+        deps.DataStore,
+    )
 }

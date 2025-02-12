@@ -1,4 +1,4 @@
-package com.mmt.ads.model
+package com.mmt.ads.models
 
 class AdsId {
     var banner_in_app: List<String>? = null
