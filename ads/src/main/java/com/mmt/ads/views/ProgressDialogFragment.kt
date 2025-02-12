@@ -42,7 +42,7 @@ class ProgressDialogFragment(customProgressView: View? = null) : DialogFragment(
         try {
             getParentFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss()
             FragmentUtils.pop(requireActivity().supportFragmentManager)
-            mDialog!!.dismiss()
+            mDialog?.dismiss()
         } catch (e: Exception) {
             e.printStackTrace()
         }
