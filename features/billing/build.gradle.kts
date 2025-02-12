@@ -34,5 +34,5 @@ android {
 
 dependencies {
     dependOn(deps.Room, deps.Billing)
-    api(project(":common"))
+    api(project(":features:common"))
 }

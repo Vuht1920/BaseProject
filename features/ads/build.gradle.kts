@@ -1,4 +1,6 @@
 import Build.applicationId
+import Build.compileSdk
+import Build.minSdk
 import deps.dependOn
 
 plugins {
@@ -39,5 +41,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     dependOn(deps.Ads)
-    api(project(":common"))
+    api(project(":features:common"))
 }

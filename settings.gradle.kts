@@ -21,6 +21,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "BaseProject"
 include(":app")
-include(":billing")
-include(":ads")
-include(":common")
+include(":features:billing")
+include(":features:ads")
+include(":features:common")
+project(":features:billing").projectDir = File(settingsDir, "features/billing")
+project(":features:ads").projectDir = File(settingsDir, "features/ads")
+project(":features:common").projectDir = File(settingsDir, "features/common")
