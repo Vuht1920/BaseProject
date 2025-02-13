@@ -10,5 +10,9 @@ public enum NativeAdType {
     LIST_AUDIO,
     LIST_VIDEO,
 
+    LYRICS_EMPTY,
+    LYRICS_CONTENT,
     LYRICS_DIALOG,
+    PLAYER_BIG,
+    PLAYER_MEDIUM,
 }

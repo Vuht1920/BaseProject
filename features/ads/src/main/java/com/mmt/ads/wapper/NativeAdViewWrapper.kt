@@ -43,6 +43,7 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
     private var isDestroy = false
 
     var mLayoutType: NativeAdType = nativeAdType
+    fun getLayoutType() = mLayoutType
 
     override fun getCacheTime(): Long {
         return if (AdsConfig.getInstance().isTestCacheAdsTime) 120_000 else 3600000 // 1 hour
@@ -85,10 +86,14 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         }
     }
 
-    fun showAds(context: Context?, viewGroup: ViewGroup?) {
+    fun showAds(context: Context?, viewGroup: ViewGroup?, layoutType: NativeAdType?) {
         if (!AdsConfig.getInstance().canShowAd() || (context == null && mContext == null)) return
         val appContext = if (context != null) context.applicationContext else mContext!!.applicationContext
 
+        // Update NativeAdType
+        layoutType?.let { mLayoutType = layoutType }
+
+        // Check container and update it
         viewGroup?.let {
             /*val currentContainer = getContainer()
             if (currentContainer != null && currentContainer.hashCode() == viewGroup.hashCode() && currentContainer.childCount > 0) {
@@ -106,33 +111,34 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         if (!checkConditions()) return
 
         if (!NetworkUtils.isConnected()) {
-            AdDebugLog.loge("$TAG RETURN when no network connected\nid: $mAdId")
+//            AdDebugLog.loge("$TAG RETURN when no network connected\nid: $mAdId")
             return
         }
 
         val adLoaderBuilder = AdLoader.Builder(appContext, getAdId())
-                .forNativeAd { ad: NativeAd ->
-                    AdDebugLog.logd(TAG + "\nonAdLoaded - NativeAd loaded id ${getAdId()}")
-                    onAdLoaded(ad)
-                }
-                .withAdListener(object : AdListener() {
-                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        AdDebugLog.loge(TAG + "\nlayoutType: " + mLayoutType + "\nerror code: " + loadAdError.code + "\nerror message: " + loadAdError.message + "\nadsId: " + mAdId)
+            .forNativeAd { ad: NativeAd ->
+                AdDebugLog.logi(TAG + "\nonAdLoaded - NativeAd loaded id ${getAdId()}")
+                onAdLoaded(ad)
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    AdDebugLog.loge(TAG + "\nlayoutType: " + mLayoutType + "\nerror code: " + loadAdError.code + "\nerror message: " + loadAdError.message + "\nadsId: " + mAdId)
 //                CacheAdsHelper.showTestNotify(mContext, "NativeAd", "$mLayoutType, onAdFailedToLoad, message = ${loadAdError.message}", mAdId.hashCode())
-                        onAdFailedToLoad(loadAdError.code)
-                    }
+                    onAdFailedToLoad(loadAdError.code)
+                }
 
-                    override fun onAdClicked() {
-                        super.onAdClicked()
-                        // Notify event
-                        notifyAdClicked()
-                        // Reload Ad
-                        reloadWhenAdClicked()
-                    }
-                })
+                override fun onAdClicked() {
+                    super.onAdClicked()
+                    // Notify event
+                    notifyAdClicked()
+                    // Reload Ad
+                    reloadWhenAdClicked()
+                }
+            })
 
-        var adSize = AdSize.MEDIUM_RECTANGLE
+        // Code dùng để load NativeAd có ad size phù hợp với loại Ad cần hiển thị (Small, Medium, Large...)  để tránh lỗi không policy AdMob là ko hiển thị VideoView
         var options: NativeAdOptions? = getNativeAdOptions()
+        var adSize = AdSize.MEDIUM_RECTANGLE
         if (mLayoutType == NativeAdType.SMALL || mLayoutType == NativeAdType.LIST_AUDIO || mLayoutType == NativeAdType.LIST_VIDEO) {
 //            AdDebugLog.logd("\nmLayoutType: $mLayoutType \n->adLoaderBuilder.forAdManagerAdView(AdSize.BANNER)")
             adSize = AdSize.LARGE_BANNER
@@ -142,6 +148,8 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         options?.let {
             adLoaderBuilder.withNativeAdOptions(it)
         }
+
+        adLoaderBuilder.withNativeAdOptions(getNativeAdOptions())
 
         isLoading = true
         isLoaded = false
@@ -213,7 +221,7 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         mHandler.postDelayed({
             if (!isLoading) {
                 destroyAdInstance()
-                showAds(mContext, getContainer())
+                showAds(mContext, getContainer(), mLayoutType)
             }
         }, 1000)
     }

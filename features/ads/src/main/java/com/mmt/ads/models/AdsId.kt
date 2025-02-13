@@ -1,22 +1,12 @@
 package com.mmt.ads.models
 
 object AdsId {
-    const val banner_bottom: String = "ca-app-pub-7739790111472639/7145418300"
-    const val banner_bottom_1: String = "ca-app-pub-7739790111472639/3688608773"
-    const val banner_bottom_2: String = "ca-app-pub-7739790111472639/8749363765"
+    const val banner_bottom: String = "ca-app-pub-7739790111472639/8882720581" // new (04/02/2025) Banner_no_inst2 (luôn load lại Ad khi vào MH)
+    const val banner_bottom_2: String = "ca-app-pub-7739790111472639/9482095197" // new (15/01/2025) Banner_no_inst1 (luôn load lại Ad khi vào MH)
 
-    const val native_bottom_main: String = "ca-app-pub-7739790111472639/1426241666"
-    const val native_bottom_main1: String = "ca-app-pub-7739790111472639/8199479670"
-    const val native_bottom_main2: String = "ca-app-pub-7739790111472639/8199479670"
-
-    const val native_in_list: String = "ca-app-pub-7739790111472639/5242143840"
-
-    const val native_lyrics: String = "ca-app-pub-7739790111472639/2024969471"
-    const val native_player: String = "ca-app-pub-7739790111472639/4718619417"
-
-    const val native_tab_home: String = "ca-app-pub-7739790111472639/5305776922"
-    const val native_exit_dialog: String = "ca-app-pub-7739790111472639/9668489924"
-    const val native_empty_screen: String = "ca-app-pub-7739790111472639/6467611518"
+    const val native_all: String = "ca-app-pub-7739790111472639/5308511505"  // empty, home, exit
+    const val native_in_list: String = "ca-app-pub-7739790111472639/9056184822" // in list (1)
+    const val native_in_list_2: String = "ca-app-pub-7739790111472639/7743103152" // in list (2 and more)
 
     const val interstitial: String = "ca-app-pub-7739790111472639/5758919752"
     const val interstitial_opa: String = "ca-app-pub-7739790111472639/5846412956"

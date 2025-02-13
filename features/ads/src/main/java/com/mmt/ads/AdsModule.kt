@@ -15,6 +15,8 @@ import androidx.lifecycle.Lifecycle
 import com.blankj.utilcode.util.Utils
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.mmt.AdContainerWatcher
+import com.mmt.NativeAdCenterLoader
 import com.mmt.ads.AppOpenAdsHelper
 import com.mmt.ads.config.AdsConfig
 import com.mmt.ads.models.AdsId
@@ -24,8 +26,10 @@ import com.mmt.ads.models.NativeAdType
 import com.mmt.ads.utils.AdDebugLog
 import com.mmt.ads.utils.AdsUtils
 import com.mmt.ads.wapper.AdOPAListener
+import com.mmt.ads.wapper.AdViewBottom
 import com.mmt.ads.wapper.AdWrapper
 import com.mmt.ads.wapper.AdWrapperListener
+import com.mmt.ads.wapper.AdsInListHelper
 import com.mmt.ads.wapper.InterstitialOPA
 import com.mmt.ads.wapper.NativeAdViewWrapper
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -103,7 +107,7 @@ class AdsModule private constructor() {
                         val start = SystemClock.elapsedRealtime()
                         MobileAds.initialize(application) {
                             mLoadingState = LoadingState.FINISHED
-                            AdAdDebugLog.loge("MobileAds initializationCompleted -> Take " + (SystemClock.elapsedRealtime() - start) + " ms")
+                            AdDebugLog.loge("MobileAds initializationCompleted -> Take " + (SystemClock.elapsedRealtime() - start) + " ms")
                             GlobalScope.launch(Dispatchers.Main) {
                                 callback?.onInitializeCompleted()
                             }
@@ -145,7 +149,7 @@ class AdsModule private constructor() {
         if (context == null) return null
         val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val appProcessInfoList = manager.runningAppProcesses
-        if (!UtilsLib.isEmptyList(appProcessInfoList)) {
+        if (appProcessInfoList.isNotEmpty()) {
             for (processInfo in appProcessInfoList) {
                 if (processInfo!!.pid == Process.myPid()) {
                     return processInfo.processName
@@ -598,7 +602,7 @@ class AdsModule private constructor() {
             return
         }
         if (mSession != session) {
-            AdAdDebugLog.loge("RETURN destroyAds when mSession != session")
+            AdDebugLog.loge("RETURN destroyAds when mSession != session")
             return
         }
 
@@ -606,13 +610,13 @@ class AdsModule private constructor() {
         mMapBottomBanner.clear()
 
         if (AdsConfig.getInstance().isCacheAds && !forceDestroy) {
-            AdAdDebugLog.loge(" -> Keep Ad instances, just remove Ad from container")
+            AdDebugLog.loge(" -> Keep Ad instances, just remove Ad from container")
             // Just remove Ad from container -> try to cache loaded Ad instance to show it immediate when user open app again
             mNativeAll?.detachAdFromContainerWhenKill()
             mNativeInList?.detachAdFromContainerWhenKill()
             mAdsInListHelper?.detachAdFromContainerWhenKill()
         } else {
-            AdAdDebugLog.loge(" -> Destroy Ad instances")
+            AdDebugLog.loge(" -> Destroy Ad instances")
             // NativeAdCenter
             NativeAdCenterLoader.destroy()
             // Native tab Home
