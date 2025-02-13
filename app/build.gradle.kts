@@ -30,8 +30,16 @@ android {
         targetSdk = Build.targetSdk
         versionCode = 10000 * major + 1000 * minor + 10 * patch
         versionName = "$major.$minor.$patch"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+
+        buildConfigField("boolean", "SHOW_AD", "true")
     }
+
     signingConfigs {
         create("release") {
             storeFile = file(keystoreProperties["storeFile"] as String)
@@ -55,6 +63,23 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("App") {
+            dimension = "environment"
+            applicationId = Build.applicationId
+            versionName = "0.001"
+            versionCode = 1
+            buildConfigField("boolean", "TEST_AD", "false")
+        }
+        create("App_Debug") {
+            dimension = "environment"
+            applicationId = Build.applicationId
+            versionName = "0.001"
+            versionCode = 1
+            buildConfigField("boolean", "TEST_AD", "true")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -64,6 +89,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     bundle {
         language { enableSplit = false }
@@ -88,6 +114,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Lifecycle process
+    implementation(libs.androidx.lifecycle.process)
+
     // Standard dependencies
     dependOn(
         deps.AndroidX,
@@ -96,14 +125,7 @@ dependencies {
         deps.Log,
         deps.Glide,
         deps.Coroutine,
-//        deps.Room,
-//        deps.Firebase,
-//        deps.CameraX,
-//        deps.Test,
-//        deps.Ads,
-//        deps.Billing
     )
 
-//    // Billing module
-//    implementation(project(":billing"))
+    api(project(":features:ads"))
 }

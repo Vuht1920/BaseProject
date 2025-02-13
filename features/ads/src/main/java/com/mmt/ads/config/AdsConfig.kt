@@ -2,12 +2,13 @@ package com.mmt.ads.config
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.os.SystemClock
 import com.mmt.ads.GoogleConsentManager
-import com.mmt.ads.PrefRepository
-import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS
-import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS
-import com.mmt.ads.PrefRepository.PreferenceKeys.DEFAULT_WAITING_TIME_WHEN_LOAD_FAILED_IN_MS
+import com.mmt.ads.data.repository.dataStore.PrefRepository
+import com.mmt.ads.data.repository.dataStore.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS
+import com.mmt.ads.data.repository.dataStore.PrefRepository.PreferenceKeys.DEFAULT_INTER_OPA_SPLASH_DELAY_IN_MS
+import com.mmt.ads.data.repository.dataStore.PrefRepository.PreferenceKeys.DEFAULT_WAITING_TIME_WHEN_LOAD_FAILED_IN_MS
 import com.mmt.ads.models.AdsType
 import com.mmt.ads.utils.AdDebugLog
 import org.json.JSONObject
@@ -49,6 +50,15 @@ class AdsConfig {
     var freqAppOpenAdInMs: Long = 0
 
     private val prefRepository by lazy { PrefRepository.getInstance(mApplication!!) }
+
+
+    /**
+     * NativeAd theme color config
+     * */
+    var accentColor = Color.parseColor("#4967F9")
+    var textMainColor = -1
+    var textSecondaryColor = -1
+    var nativeAdBackgroundColor = -1
 
     fun mustInit(): Boolean {
         return mApplication == null

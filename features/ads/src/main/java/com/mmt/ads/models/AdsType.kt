@@ -1,10 +1,16 @@
 package com.mmt.ads.models
 
 enum class AdsType(var value: String) {
-    BANNER_IN_APP("banner_in_app"),
-    BANNER_EXIT_DIALOG("banner_exit_dialog"),
-    BANNER_EMPTY_SCREEN("banner_empty_screen"),
-    INTERSTITIAL("interstitial"),
+    BANNER_ALL("banner_all"),
+    NATIVE_ALL("native_all"),
+    NATIVE_LIST("native_list"),
+    NATIVE_TAB_HOME("native_tab_home"),
+    NATIVE_EXIT_DIALOG("native_exit_dialog"),
+    NATIVE_EMPTY_SCREEN("native_empty_screen"),
+    NATIVE_LYRICS_EMPTY("native_lyrics_empty"),
+    NATIVE_LYRICS_DIALOG("native_lyrics_dialog"),
     INTERSTITIAL_OPA("interstitial_opa"),
-    INTERSTITIAL_GIFT("interstitial_gift")
+    APP_OPEN_ADS("app_open_ads"),
+
+    INTERSTITIAL("interstitial")
 }

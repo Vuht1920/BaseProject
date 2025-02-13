@@ -1,7 +1,5 @@
 package com.mmt.ads.wapper
 
-import android.view.ViewGroup
-
 abstract class AbsAdListeners {
 
     open var mAdListeners: HashMap<String, AdWrapperListener?> = hashMapOf()
@@ -48,7 +46,7 @@ abstract class AbsAdListeners {
     /**
      * AdListeners
      * */
-    open fun notifyAdLoaded(id: String) {
+    open fun notifyAdLoaded() {
         try {
             mAdListeners.values.forEach { listener ->
                 listener?.onAdLoaded()
@@ -57,10 +55,10 @@ abstract class AbsAdListeners {
         }
     }
 
-    open fun notifyAdLoadFailed(id: String, errorCode: Int, errorMsg: String) {
+    open fun notifyAdLoadFailed(errorCode: Int = -101) {
         try {
             mAdListeners.values.forEach { listener ->
-                listener?.onAdFailedToLoad(errorCode, errorMsg)
+                listener?.onAdFailedToLoad(errorCode)
             }
         } catch (_: Exception) {
         }
@@ -93,37 +91,10 @@ abstract class AbsAdListeners {
         }
     }
 
-    open fun notifyAdStartLoad(id: String) {
+    open fun notifyAdStartLoad() {
         try {
             mAdListeners.values.forEach { listener ->
-                listener?.onAdStartLoad(id)
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    open fun notifyAdAttachedToContainer(container: ViewGroup) {
-        try {
-            mAdListeners.values.forEach { listener ->
-                listener?.onAdAttachedToContainer(container)
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    open fun notifyIgnoreRequestAd(why: String) {
-        try {
-            mAdListeners.values.forEach { listener ->
-                listener?.ignoreRequestAd(why)
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    open fun notifyBadLoadingAd(id: String) {
-        try {
-            mAdListeners.values.forEach { listener ->
-                listener?.badLoadingAd(id)
+                listener?.onAdStartLoad()
             }
         } catch (_: Exception) {
         }
