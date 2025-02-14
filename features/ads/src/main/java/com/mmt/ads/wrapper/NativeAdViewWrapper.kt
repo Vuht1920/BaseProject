@@ -1,4 +1,4 @@
-package com.mmt.ads.wapper
+package com.mmt.ads.wrapper
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -6,75 +6,55 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.NetworkUtils
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.VideoController.VideoLifecycleCallbacks
 import com.google.android.gms.ads.VideoOptions
-import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.mmt.ads.AdsConstants
 import com.mmt.ads.R
 import com.mmt.ads.config.AdsConfig
 import com.mmt.ads.models.NativeAdType
 import com.mmt.ads.utils.AdDebugLog
-import com.mmt.ads.utils.AdsConstants
 
 
-class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAdType = NativeAdType.EMPTY_SCREEN) : AdWrapper(context, adId) {
+class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAdType = NativeAdType.SMALL) : AdWrapper(context, adId) {
     init {
         TAG = "[${this::class.java.simpleName}] ${hashCode()} -- "
     }
 
     private var mNativeAd: NativeAd? = null
-    private var mNativeAdView: NativeAdView? = null
-    private var mLoadingView: View? = null
     private var isDestroy = false
 
     var mLayoutType: NativeAdType = nativeAdType
-    fun getLayoutType() = mLayoutType
-
-    override fun getCacheTime(): Long {
-        return if (AdsConfig.getInstance().isTestCacheAdsTime) 120_000 else 3600000 // 1 hour
-    }
 
     fun setLayout(nativeAdType: NativeAdType) {
         mLayoutType = nativeAdType
     }
 
-    fun detachAdFromContainerWhenKill() {
-        removeAdsFromContainer()
-        deleteContainer()
-    }
-
     override fun removeAdsFromContainer() {
         getContainer()?.let { container ->
-            forceRemoveAd(container)
-            // Remove loading view
-//            removeLoadingViewFromContainer()
-        }
-    }
+            checkAndRemoveGlobalLayoutListener()
 
-    private fun forceRemoveAd(container: ViewGroup) {
-        checkAndRemoveGlobalLayoutListener()
-
-        if (container.childCount > 0) {
-            val nativeAdView = container.getChildAt(0)
-            if (nativeAdView is NativeAdView) {
-                nativeAdView.destroy()
-                container.removeView(nativeAdView)
+            if (container.childCount > 0) {
+                val nativeAdView = container.getChildAt(0)
+                if (nativeAdView is NativeAdView) {
+                    nativeAdView.destroy()
+                }
             }
+            container.removeAllViews()
         }
     }
 
@@ -86,14 +66,10 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         }
     }
 
-    fun showAds(context: Context?, viewGroup: ViewGroup?, layoutType: NativeAdType?) {
+    fun showAds(context: Context?, viewGroup: ViewGroup?) {
         if (!AdsConfig.getInstance().canShowAd() || (context == null && mContext == null)) return
         val appContext = if (context != null) context.applicationContext else mContext!!.applicationContext
 
-        // Update NativeAdType
-        layoutType?.let { mLayoutType = layoutType }
-
-        // Check container and update it
         viewGroup?.let {
             /*val currentContainer = getContainer()
             if (currentContainer != null && currentContainer.hashCode() == viewGroup.hashCode() && currentContainer.childCount > 0) {
@@ -110,38 +86,32 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
 
         if (!checkConditions()) return
 
-        if (!NetworkUtils.isConnected()) {
-//            AdDebugLog.loge("$TAG RETURN when no network connected\nid: $mAdId")
-            return
-        }
+        isLoading = true
+        isLoaded = false
 
-        val adLoaderBuilder = AdLoader.Builder(appContext, getAdId())
-            .forNativeAd { ad: NativeAd ->
-                AdDebugLog.logi(TAG + "\nonAdLoaded - NativeAd loaded id ${getAdId()}")
-                onAdLoaded(ad)
+        val adLoaderBuilder = AdLoader.Builder(appContext, getAdId()).forNativeAd { ad: NativeAd ->
+            AdDebugLog.logi(TAG + "NativeAd loaded id ${getAdId()}")
+            onAdLoaded(ad)
+        }.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                AdDebugLog.loge(TAG + "\nlayoutType: " + mLayoutType + "\nerror code: " + loadAdError.code + "\nerror message: " + loadAdError.message + "\nadsId: " + mAdId)
+                onAdFailedToLoad(loadAdError.code)
             }
-            .withAdListener(object : AdListener() {
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    AdDebugLog.loge(TAG + "\nlayoutType: " + mLayoutType + "\nerror code: " + loadAdError.code + "\nerror message: " + loadAdError.message + "\nadsId: " + mAdId)
-//                CacheAdsHelper.showTestNotify(mContext, "NativeAd", "$mLayoutType, onAdFailedToLoad, message = ${loadAdError.message}", mAdId.hashCode())
-                    onAdFailedToLoad(loadAdError.code)
-                }
 
-                override fun onAdClicked() {
-                    super.onAdClicked()
-                    // Notify event
-                    notifyAdClicked()
-                    // Reload Ad
-                    reloadWhenAdClicked()
-                }
-            })
+            override fun onAdClicked() {
+                super.onAdClicked()
+                // Notify event
+                notifyAdClicked()
+                // Reload Ad
+                reloadWhenAdClicked()
+            }
+        })
 
-        // Code dùng để load NativeAd có ad size phù hợp với loại Ad cần hiển thị (Small, Medium, Large...)  để tránh lỗi không policy AdMob là ko hiển thị VideoView
-        var options: NativeAdOptions? = getNativeAdOptions()
         var adSize = AdSize.MEDIUM_RECTANGLE
-        if (mLayoutType == NativeAdType.SMALL || mLayoutType == NativeAdType.LIST_AUDIO || mLayoutType == NativeAdType.LIST_VIDEO) {
-//            AdDebugLog.logd("\nmLayoutType: $mLayoutType \n->adLoaderBuilder.forAdManagerAdView(AdSize.BANNER)")
-            adSize = AdSize.LARGE_BANNER
+        var options: NativeAdOptions? = getNativeAdOptions()
+        if (mLayoutType == NativeAdType.SMALL || mLayoutType == NativeAdType.LIST_AUDIO || mLayoutType == NativeAdType.LIST_VIDEO || mLayoutType == NativeAdType.SETTINGS) {
+            AdDebugLog.logd("\nmLayoutType: $mLayoutType \n->adLoaderBuilder.forAdManagerAdView(AdSize.BANNER)")
+            adSize = AdSize.FLUID
             options = null
         }
         adLoaderBuilder.forAdManagerAdView({ }, adSize)
@@ -149,20 +119,9 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
             adLoaderBuilder.withNativeAdOptions(it)
         }
 
-        adLoaderBuilder.withNativeAdOptions(getNativeAdOptions())
-
-        isLoading = true
-        isLoaded = false
-
-        // Notify Ad start load
-        notifyAdStartLoad()
-
-        // Show loading
-        showLoadingView(container = viewGroup)
-
         val adLoader: AdLoader = adLoaderBuilder.build()
-        AdDebugLog.logi(TAG + "\nStart load NativeAd id ${getAdId()} \nContainer: ${getContainer()?.hashCode()} \nmLayoutType: $mLayoutType")
-        adLoader.loadAd(AdManagerAdRequest.Builder().build())
+        AdDebugLog.logi("Start load NativeAd id ${getAdId()}")
+        adLoader.loadAd(AdRequest.Builder().build())
     }
 
     private fun getNativeAdOptions(): NativeAdOptions {
@@ -193,7 +152,7 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         mNativeAd = nativeAd
         showNativeAd()
         // Notify Ad loaded
-        adLoaded()
+        notifyAdLoaded()
     }
 
     private fun onAdFailedToLoad(errorCode: Int) {
@@ -204,24 +163,21 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         AdsConfig.getInstance().onAdFailedToLoad(mAdId)
         // removeAdFromContainer
         removeAdFromContainer()
-        // remove loading view
-        removeLoadingViewFromContainer(true)
         // Notify load failed
-        adLoadFailed(errorCode)
+        notifyAdLoadFailed(errorCode)
     }
 
     private fun reloadWhenAdClicked() {
         // Set flags
         isLoading = false
         isLoaded = false
-        loadedTimestamp = 0
         // Remove Ads from container
         removeAdsFromContainer()
         // Post delay to reload Ad
         mHandler.postDelayed({
             if (!isLoading) {
                 destroyAdInstance()
-                showAds(mContext, getContainer(), mLayoutType)
+                showAds(mContext, getContainer())
             }
         }, 1000)
     }
@@ -238,83 +194,12 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         }
     }
 
-    override fun showLoadingView(container: ViewGroup?) {
-        container?.apply {
-            initLoadingView(container.context.applicationContext)
-            if (container.hashCode() == (mLoadingView?.parent as? ViewGroup)?.hashCode()) {
-//                AdDebugLog.logd(TAG + "RETURN showLoadingView when LoadingView already exist in container = " + container.hashCode())
-                return
-            }
-
-            removeLoadingViewFromContainer()
-            val adHeight = getLayoutHeight(context)
-            visibility = View.VISIBLE
-//            AdDebugLog.logd("$TAG Show loadingView for container ${container.hashCode()}")
-            container.removeAllViews()
-            container.addView(mLoadingView, LayoutParams(LayoutParams.MATCH_PARENT, adHeight))
-
-            /*if (isAdInList()) {
-                AdDebugLog.logd("$TAG Show loadingView for container ${container.hashCode()}")
-                container.removeAllViews()
-                container.addView(mLoadingView, LayoutParams(LayoutParams.MATCH_PARENT, adHeight))
-                return
-            }
-
-            viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    if (isLoading && container.hashCode() == getContainer()?.hashCode()) {
-                        removeAllViews()
-                        mLoadingView?.let { loadingView ->
-                            AdDebugLog.logd(TAG + "addLoadingViewToContainer - container hash: ${container.hashCode()}")
-                            removeLoadingViewFromContainer(true)
-                            try {
-                                container.addView(loadingView, LayoutParams(LayoutParams.MATCH_PARENT, adHeight))
-                            } catch (e: Exception) {
-                                AdDebugLog.loge(e)
-                            }
-                        }
-                    }
-                }
-            })*/
-        }
-    }
-
-    private var loadingLayoutId = 0
-
-    private fun initLoadingView(context: Context) {
-        val layoutId = getLoadingLayout()
-        if (mLoadingView == null || layoutId != loadingLayoutId) {
-            mLoadingView = LayoutInflater.from(context).inflate(layoutId, null)
-        }
-        loadingLayoutId = layoutId
-    }
-
-    private fun removeLoadingViewFromContainer(removeImmediate: Boolean = false) {
-        mLoadingView?.let { loadingView ->
-            (loadingView.parent as? ViewGroup)?.let { container ->
-                try {
-                    if (removeImmediate) {
-                        container.removeView(loadingView)
-                    } else if (getContainer() != null && container.hashCode() != getContainer()?.hashCode()) {
-//                        AdDebugLog.logd("$TAG \nremoveLoadingViewFromContainer: ${getContainer()?.hashCode()}")
-                        container.removeView(loadingView)
-                    }
-                } catch (e: Exception) {
-                    AdDebugLog.loge(e)
-                }
-            }
-        }
-    }
-
     private fun isAdInList(): Boolean {
         return mLayoutType == NativeAdType.LIST_AUDIO || mLayoutType == NativeAdType.LIST_VIDEO
     }
 
     private fun showNativeAd() {
         mNativeAd?.let {
-            removeLoadingViewFromContainer(true)
-
             getContainer()?.let { container ->
                 if (container.context != null) {
                     if (!container.isAttachedToWindow && !isAdInList()) {
@@ -327,28 +212,17 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
                     // Set MATCH_PARENT for container
                     validateWidthForContainer(container)
                     val nativeAdView: NativeAdView
-
                     if (container.childCount > 0 && container.getChildAt(0) is NativeAdView) {
                         nativeAdView = container.getChildAt(0) as NativeAdView
-//                        AdDebugLog.logi("$TAG \nUse exist NativeAdView in container: ${container.hashCode()}")
                     } else {
                         // Create a NativeAdView with a container context and set it as the parent of the NativeAdView
                         // (to ensure the NativeAdView will be destroyed when the container is destroyed)
                         nativeAdView = LayoutInflater.from(containerContext).inflate(getLayout(), container, false) as NativeAdView
-//                        AdDebugLog.logi("$TAG \nInflate new NativeAdView, container: ${container.hashCode()}")
 
                         // Add NativeAdView to container
                         container.removeAllViews()
                         container.addView(nativeAdView)
                     }
-
-                    mLoadingView?.let { loadingView ->
-                        container.removeView(loadingView)
-                    }
-
-                    destroyCurrentNativeAdView()
-                    mNativeAdView = nativeAdView
-
                     if (!isAdInList()) {
                         // Set visible for container (ignore type LIST_AUDIO & LIST_VIDEO)
                         container.visibility = View.VISIBLE
@@ -363,19 +237,12 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         }
     }
 
-    private fun destroyCurrentNativeAdView() {
-        (mNativeAdView?.parent as? ViewGroup)?.let {
-            forceRemoveAd(it)
-        }
-        removeLoadingViewFromContainer()
-    }
-
     /**
      * Set full width for container
      * */
     private fun validateWidthForContainer(container: ViewGroup) {
         val layoutParams = container.layoutParams
-        layoutParams.width = LayoutParams.MATCH_PARENT
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         container.layoutParams = layoutParams
         container.minimumWidth = ConvertUtils.dp2px(250f)
     }
@@ -386,7 +253,7 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
     private var viewTreeObserverHash = -101
 
     private fun waitContainerAttachedToWindow(container: ViewGroup) {
-        AdDebugLog.logd("$TAG \n waitContainerAttachedToWindow with layoutType = $mLayoutType, container: ${getContainer()?.hashCode()}")
+        AdDebugLog.logd("$TAG \nwaitContainerAttachedToWindow: ${getContainer()?.hashCode()}")
         viewTreeObserverHash = container.hashCode()
         container.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
@@ -434,16 +301,14 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
 
             // Set other ad assets.
             nativeAdView.headlineView = nativeAdView.findViewById(R.id.ad_headline)
+            nativeAdView.bodyView = nativeAdView.findViewById(R.id.ad_body)
             nativeAdView.callToActionView = nativeAdView.findViewById(R.id.ad_call_to_action)
             nativeAdView.iconView = nativeAdView.findViewById(R.id.ad_app_icon)
+            nativeAdView.priceView = nativeAdView.findViewById(R.id.ad_price)
             nativeAdView.starRatingView = nativeAdView.findViewById(R.id.ad_stars)
             nativeAdView.storeView = nativeAdView.findViewById(R.id.ad_store)
             nativeAdView.advertiserView = nativeAdView.findViewById(R.id.ad_advertiser)
             setStyleForNativeAdView(nativeAdView)
-            if (isAdInList()) {
-                nativeAdView.bodyView = nativeAdView.findViewById(R.id.ad_body)
-                nativeAdView.priceView = nativeAdView.findViewById(R.id.ad_price)
-            }
 
             // The headline is guaranteed to be in every UnifiedNativeAd.
             if (nativeAdView.headlineView != null) {
@@ -573,54 +438,25 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
             if (AdsConfig.getInstance().textMainColor != -1) {
                 val adHeadline = adView.findViewById<TextView>(R.id.ad_headline)
                 adHeadline?.setTextColor(AdsConfig.getInstance().textMainColor)
-            }/* // Set background
+            }
+            // Set background
             if (AdsConfig.getInstance().nativeAdBackgroundColor != -1) {
                 val background = adView.findViewById<View>(R.id.native_ad_background)
                 if (background != null && background.background == null) {
                     background.setBackgroundColor(AdsConfig.getInstance().nativeAdBackgroundColor)
                 }
-            }*/
+            }
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
     }
 
     private fun getLayout(): Int {
-        return when (mLayoutType) {
-            NativeAdType.EMPTY_SCREEN -> {
-                R.layout.native_ad_medium
-            }
-            NativeAdType.EXIT_DIALOG -> {
-                R.layout.native_ad_medium
-            }
-            NativeAdType.TAB_HOME -> {
-                R.layout.native_ad_medium
-            }
-            NativeAdType.MEDIUM -> {
-                R.layout.native_ad_medium
-            }
-            else -> {
-                R.layout.native_ad_medium
-            }
-        }
-    }
-
-    private fun getLayoutHeight(context: Context): Int {
-        return if (mLayoutType == NativeAdType.LYRICS_DIALOG) {
-            context.resources.getDimensionPixelSize(R.dimen.native_dialog_height)
-        } else if (mLayoutType == NativeAdType.SETTINGS) {
-            context.resources.getDimensionPixelSize(R.dimen.native_dialog_height)
-        } else if (mLayoutType == NativeAdType.LIST_AUDIO) {
-            context.resources.getDimensionPixelSize(R.dimen.item_height)
-        } else if (mLayoutType == NativeAdType.LIST_VIDEO) {
-            context.resources.getDimensionPixelSize(R.dimen.item_height)
+        return if (mLayoutType == NativeAdType.SMALL) {
+            R.layout.native_ad_bottom
         } else {
-            context.resources.getDimensionPixelSize(R.dimen.native_medium_height)
+            R.layout.native_ad_medium
         }
-    }
-
-    private fun getLoadingLayout(): Int {
-        return R.layout.native_ad_loading
     }
 
     override fun addAdsToContainer() {
@@ -634,7 +470,9 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
         override fun onViewDetachedFromWindow(view: View) {
             if (view is ViewGroup && view.childCount > 0) {
                 val nativeAdView = view.getChildAt(0)
-                (nativeAdView as? NativeAdView)?.destroy()
+                if (nativeAdView is NativeAdView) {
+                    nativeAdView.destroy()
+                }
                 view.removeAllViews()
             }
             view.removeOnAttachStateChangeListener(this)
@@ -649,21 +487,15 @@ class NativeAdViewWrapper(context: Context, adId: String, nativeAdType: NativeAd
     }
 
     override fun destroyAdInstance() {
-        AdDebugLog.loge("$TAG destroyAdInstance")
         // Set flags
         isLoading = false
         isLoaded = false
-        loadedTimestamp = 0
         // Destroy Ad instance
         mNativeAd?.destroy()
         mNativeAd = null
-        mNativeAdView?.destroy()
-        mNativeAdView = null
     }
 
     override fun destroy() {
-        destroyCurrentNativeAdView()
-        super.destroy()
         isDestroy = true
     }
 }

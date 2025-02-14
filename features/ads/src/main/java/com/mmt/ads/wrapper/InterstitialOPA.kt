@@ -1,8 +1,10 @@
-package com.mmt.ads.wapper
+package com.mmt.ads.wrapper
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -10,7 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle.State
+import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.FragmentUtils
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -18,38 +22,66 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.mmt.ads.AdsConstants
 import com.mmt.ads.R
 import com.mmt.ads.config.AdsConfig
+import com.mmt.ads.models.AdsId
+import com.mmt.ads.models.CountingState
 import com.mmt.ads.models.LoadingState
 import com.mmt.ads.utils.AdDebugLog
-import com.mmt.ads.utils.AdsConstants
 import com.mmt.ads.views.ProgressDialogFragment
-import java.lang.ref.WeakReference
 
-class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
+class InterstitialOPA(context: Context, opaListener: AdOPAListener? = null) : AbsAdListeners() {
     private val TAG = "[${this::class.java.simpleName}] ${hashCode()} -- "
-    private val mAdId = adId
+    private val mAdId = AdsId.interstitial_opa
     private val mHandler = Handler(Looper.getMainLooper())
+    private val mMinDelayTime = 2000L // Sếp Hà yêu cầu show tối thiểu 2s Splash rồi mới show InterOPA
+
     private var mApplicationContext: Context? = context.applicationContext
+    private var mActivity: AppCompatActivity? = null
 
     private var mInterstitialAd: InterstitialAd? = null
-    private var mGiftView: WeakReference<View?>? = null
+    private var mCounter: CountDownTimer? = null
     private var mLoadingDialog: Dialog? = null
     private var mLoadingFragment: ProgressDialogFragment? = null
-    private var mLoadingState: LoadingState? = LoadingState.NONE
+    var mOPAListener: AdOPAListener? = opaListener
 
-    private var isShowingAd = false
-    private var mProgressBgResourceId: Int = 0
-    private var mCustomProgressView: View? = null
+    var isShowingAd = false
+    private var isShownOnStartUp = false
+    private var mCountingState: CountingState? = CountingState.NONE
+    private var mLoadingState: LoadingState? = LoadingState.NONE
+    var mProgressBgResourceId: Int = 0
+    var mCustomProgressView: View? = null
 
     /**
      * Keep track of the time an Inter ad is loaded to ensure you don't show an expired ad.
      */
     private var loadedTimestamp: Long = 0
 
-    fun initGiftAd(view: View) {
-        mGiftView = WeakReference(view)
+    fun resetStates() {
+        mCountingState = CountingState.NONE
+        mLoadingState = LoadingState.NONE
+        isShowingAd = false
+        isShownOnStartUp = false
+    }
+
+    fun isCounting(): Boolean {
+        return mCountingState == CountingState.COUNTING
+    }
+
+    private fun isLoadingAds(): Boolean {
+        return mLoadingState == LoadingState.LOADING
+    }
+
+    fun initAndShowOPA(activity: AppCompatActivity) {
+        AdDebugLog.logd(TAG + "initAndShowOPA")
+        mApplicationContext = activity.applicationContext
+        mActivity = activity
+        registerLifecycleObserver(activity)
+
+        // Start load Ad & counter
         startLoadInterstitial()
+        startOPALoadingCounter(activity)
     }
 
     fun preLoad() {
@@ -57,14 +89,6 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
             AdDebugLog.logd(TAG + "preLoad")
             startLoadInterstitial()
         }
-    }
-
-    private fun showGiftView() {
-        mGiftView?.get()?.visibility = View.VISIBLE
-    }
-
-    private fun hideGiftView() {
-        mGiftView?.get()?.visibility = View.GONE
     }
 
     private fun getAdId(): String {
@@ -75,14 +99,9 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
         }
     }
 
-    private fun isLoadingAds(): Boolean {
-        return mLoadingState == LoadingState.LOADING
-    }
-
     private fun startLoadInterstitial() {
         if (isLoaded()) {
             AdDebugLog.logi(TAG + "RETURN when Ads isLoaded")
-            showGiftView()
             return
         }
         if (isShowingAd) {
@@ -100,8 +119,7 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
         }
 
         // Init Ads
-        AdDebugLog.logi(TAG + "Load Inter OPA id " + adId)
-        hideGiftView()
+        AdDebugLog.loge(TAG + "Load Inter OPA id " + adId)
         mApplicationContext?.let {
             mLoadingState = LoadingState.LOADING
             val adRequest = AdRequest.Builder().build()
@@ -114,7 +132,7 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
             super.onAdLoaded(interstitialAd)
             mLoadingState = LoadingState.FINISHED
             loadedTimestamp = SystemClock.elapsedRealtime()
-            AdDebugLog.logi("$TAG onAdLoaded" )
+            AdDebugLog.loge("$TAG onAdLoaded:\nisCounting: ${isCounting()}, activityState: ${mActivity?.lifecycle?.currentState}" )
             // Save flag loaded
             AdsConfig.getInstance().onAdLoaded(mAdId)
 
@@ -123,9 +141,13 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
             mInterstitialAd?.fullScreenContentCallback = fullScreenContentCallback
 
             // Notify event
-            notifyAdLoaded(mAdId)
-            // Show gift view if needed
-            showGiftView()
+            mOPAListener?.onAdOPALoaded()
+            notifyAdLoaded()
+
+            // Check flow counter OPA
+            if (isCounting() && mActivity?.lifecycle?.currentState?.isAtLeast(State.STARTED) == true) {
+                onOPAFinished(mActivity)
+            }
         }
 
         override fun onAdFailedToLoad(error: LoadAdError) {
@@ -140,9 +162,12 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
 
             mInterstitialAd = null
             // Notify event
-            notifyAdLoadFailed(mAdId, error.code, message)
-            // Hide gift view
-            hideGiftView()
+            notifyAdLoadFailed(error.code)
+            // Check flow counter OPA
+            if (isCounting()) {
+                stopCounter()
+                onOPAFinished(mActivity)
+            }
         }
     }
 
@@ -155,12 +180,15 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
 
         override fun onAdShowedFullScreenContent() {
             super.onAdShowedFullScreenContent()
-            // Show OPA -> lưu lại timestamp để check freq time
-            AdsConfig.getInstance().saveInterstitialShowedTimestamp()
+            if (isShownOnStartUp) {
+                // Show OPA -> lưu lại timestamp để check freq time
+                AdsConfig.getInstance().setLastTimeOPAShow()
+            }
             // Reset
-            loadedTimestamp = 0
             mInterstitialAd = null
+            loadedTimestamp = 0
             // Notify event
+            mOPAListener?.onAdOPAOpened()
             notifyAdOpened()
         }
 
@@ -176,12 +204,76 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
         isShowingAd = false
         loadedTimestamp = 0
         // Notify event
+        if (isShownOnStartUp) {
+            isShownOnStartUp = false
+            mOPAListener?.onAdOPACompleted()
+        }
         notifyAdClosed()
-        // Hide gift view
-        showGiftView()
 
         // Load lại Ads cho phiên sau
         preLoad()
+    }
+
+    private fun startOPALoadingCounter(activity: AppCompatActivity) {
+        if (mCountingState != CountingState.NONE) return
+
+        isShownOnStartUp = false
+        if (!AdsConfig.getInstance().canShowOPA()) {
+            AdDebugLog.loge(TAG + "RETURN counter when can't showOPA")
+            onOPAFinished(activity)
+            return
+        }
+
+        mCountingState = CountingState.COUNTING
+        val counterTimeout = AdsConfig.getInstance().interOPAProgressDelayInMs + AdsConfig.getInstance().splashDelayInMs
+        val minimumDelay = if (counterTimeout < mMinDelayTime) counterTimeout else mMinDelayTime
+        val interval = 100L
+        AdDebugLog.loge("$TAG\ncounterTimeout: $counterTimeout")
+        mCounter = object : CountDownTimer(counterTimeout, interval) {
+            override fun onTick(millisUntilFinished: Long) {
+                // Check if ad OPA loaded
+                val passedTime = counterTimeout - millisUntilFinished
+                if (passedTime >= minimumDelay && mInterstitialAd != null && activity.lifecycle.currentState.isAtLeast(State.RESUMED)) {
+                    AdDebugLog.loge("$TAG\nInterstitial loaded when counting -> stop counter and show immediate\npassedTime: $passedTime")
+                    stopCounter()
+                    onOPAFinished(activity)
+                }
+            }
+
+            override fun onFinish() {
+                AdDebugLog.logd("$TAG\nCounter FINISHED")
+                onOPAFinished(activity)
+            }
+        }
+        mCounter?.start()
+    }
+
+    private fun onOPAFinished(activity: AppCompatActivity?) {
+        if (mCountingState == CountingState.COUNT_FINISHED) return
+
+        AdDebugLog.loge("onOPAFinished")
+        mCountingState = CountingState.COUNT_FINISHED
+        isShownOnStartUp = show(activity)
+        if (!isShowingAd) { // Ads not showing
+            mOPAListener?.onAdOPACompleted()
+            hideLoading()
+        }
+    }
+
+    private fun registerLifecycleObserver(activity: AppCompatActivity?) {
+        activity?.lifecycle?.addObserver(lifecycleObserver)
+    }
+
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            super.onDestroy(owner)
+            owner.lifecycle.removeObserver(this)
+            stopCounter()
+            if (mActivity?.lifecycle?.hashCode() == owner.lifecycle.hashCode()) {
+                mActivity = null
+            }
+        }
     }
 
     /**
@@ -203,11 +295,12 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
     fun show(activity: AppCompatActivity?): Boolean {
         try {
             activity?.let {
-                if (isLoaded() && AdsConfig.getInstance().canShowInterstitial() && it.lifecycle.currentState.isAtLeast(State.STARTED)) {
+                AdDebugLog.logi(TAG + "isLoaded: ${isLoaded()}\ncanShowOPA: ${AdsConfig.getInstance().canShowOPA()}\nlifecycle currentState: ${it.lifecycle.currentState}")
+                if (isLoaded() && AdsConfig.getInstance().canShowOPA() && it.lifecycle.currentState.isAtLeast(State.INITIALIZED)) {
                     isShowingAd = true
                     showLoading(it)
                     mInterstitialAd?.show(activity)
-                    AdDebugLog.logi(TAG + "show Interstitial")
+                    AdDebugLog.logi(TAG + "show InterstitialOpenApp")
                     return true
                 }
             }
@@ -218,6 +311,7 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
         return false
     }
 
+    @SuppressLint("InflateParams")
     fun showLoading(activity: AppCompatActivity) {
         try {
             if (mLoadingDialog?.isShowing == true) return
@@ -262,7 +356,14 @@ class InterstitialAdWrapper(context: Context, adId: String) : AbsAdListeners() {
         mLoadingFragment = null
     }
 
+    private fun stopCounter() {
+        mCounter?.cancel()
+        mCounter = null
+    }
+
     fun destroy() {
+        stopCounter()
+        resetStates()
         hideLoading()
         mInterstitialAd = null
         mHandler.removeCallbacksAndMessages(null)

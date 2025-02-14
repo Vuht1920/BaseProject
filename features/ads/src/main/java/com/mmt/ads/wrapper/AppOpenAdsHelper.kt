@@ -1,10 +1,9 @@
-package com.mmt.ads.wapper
+package com.mmt.ads.wrapper
 
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -13,43 +12,38 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.FragmentUtils
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.appopen.AppOpenAd
+import com.mmt.ads.AdsConstants
 import com.mmt.ads.R
 import com.mmt.ads.config.AdsConfig
-import com.mmt.ads.models.CountingState
+import com.mmt.ads.models.AdsId
 import com.mmt.ads.models.LoadingState
 import com.mmt.ads.utils.AdDebugLog
-import com.mmt.ads.utils.AdsConstants
 import com.mmt.ads.views.ProgressDialogFragment
 import java.lang.ref.WeakReference
 
-class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListener? = null) : AbsAdListeners() {
+class AppOpenAdsHelper(context: Context, opaListener: AdOPAListener? = null) : AbsAdListeners() {
     private val TAG = "[${this::class.java.simpleName}] ${hashCode()} -- "
-    private val mAdId = adId
+    private val mAdId = AdsId.app_open_ads
     private val mHandler = Handler(Looper.getMainLooper())
-    private val mMinDelayTime = 2000L // Sếp Hà yêu cầu show tối thiểu 2s Splash rồi mới show InterOPA
 
     private var mApplicationContext: Context? = context.applicationContext
     private var mWeakActivity: WeakReference<AppCompatActivity?>? = null
 
-    private var mInterstitialAd: InterstitialAd? = null
-    private var mCounter: CountDownTimer? = null
+    private var mAppOpenAd: AppOpenAd? = null
     private var mLoadingDialog: Dialog? = null
     private var mLoadingFragment: ProgressDialogFragment? = null
     var mOPAListener: AdOPAListener? = opaListener
 
-    var isShowingAd = false
-    private var isShownOnStartUp = false
-    private var mCountingState: CountingState? = CountingState.NONE
+    private var isShowAsOPA = false
     private var mLoadingState: LoadingState? = LoadingState.NONE
+    var isShowingAd = false
     var mProgressBgResourceId: Int = 0
     var mCustomProgressView: View? = null
 
@@ -59,47 +53,32 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
     private var loadedTimestamp: Long = 0
 
     fun resetStates() {
-        stopCounter()
-        mCountingState = CountingState.NONE
-        mLoadingState = LoadingState.NONE
-        isShowingAd = false
-        isShownOnStartUp = false
+        isShowAsOPA = false
     }
 
-    fun isCounting(): Boolean {
-        return mCountingState == CountingState.COUNTING
-    }
-
-    private fun isLoadingAds(): Boolean {
-        return mLoadingState == LoadingState.LOADING
-    }
-
-    fun initAndShowOPA(activity: AppCompatActivity) {
-        mApplicationContext = activity.applicationContext
-        mWeakActivity = WeakReference(activity)
-        registerLifecycleObserver(activity)
-
-        // Start load Ad & counter
-        startLoadInterstitial()
-        startOPALoadingCounter(activity)
+    /**
+     * Kiểm tra xem AppOpenAd có còn khả dụng để show hay không. AppOpenAd có thể cached được 4h kể từ khi load thành công
+     * */
+    fun checkAvailableAndPreLoad(): Long {
+        return if (AdsConfig.getInstance().canShowAd() && !isLoaded()) {
+            AdDebugLog.logd(TAG + "preLoad")
+            mAppOpenAd = null
+            loadedTimestamp = 0
+            startLoadAppOpenAd()
+            0
+        } else {
+            SystemClock.elapsedRealtime() - loadedTimestamp
+        }
     }
 
     fun preLoad() {
         if (AdsConfig.getInstance().canShowAd() && !isLoaded() && !isShowingAd) {
             AdDebugLog.logd(TAG + "preLoad")
-            startLoadInterstitial()
+            startLoadAppOpenAd()
         }
     }
 
-    private fun getAdId(): String {
-        return if (AdsConfig.getInstance().isTestMode) {
-            AdsConstants.interstitial_test_id
-        } else {
-            mAdId
-        }
-    }
-
-    private fun startLoadInterstitial() {
+    private fun startLoadAppOpenAd() {
         if (isLoaded()) {
             AdDebugLog.logi(TAG + "RETURN when Ads isLoaded")
             return
@@ -119,30 +98,30 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
         }
 
         // Init Ads
-        AdDebugLog.logi(TAG + "Load Inter OPA id " + adId)
+        AdDebugLog.logi(TAG + "Load AppOpenAd id " + adId)
         mApplicationContext?.let {
             mLoadingState = LoadingState.LOADING
             val adRequest = AdRequest.Builder().build()
-            InterstitialAd.load(it, adId, adRequest, interstitialAdLoadCallback)
+            AppOpenAd.load(it, adId, adRequest, appOpenAdLoadCallback)
         }
     }
 
-    private val interstitialAdLoadCallback = object : InterstitialAdLoadCallback() {
-        override fun onAdLoaded(interstitialAd: InterstitialAd) {
-            super.onAdLoaded(interstitialAd)
+    private val appOpenAdLoadCallback = object : AppOpenAd.AppOpenAdLoadCallback() {
+        override fun onAdLoaded(appOpenAd: AppOpenAd) {
+            super.onAdLoaded(appOpenAd)
             mLoadingState = LoadingState.FINISHED
             loadedTimestamp = SystemClock.elapsedRealtime()
-            AdDebugLog.logi("$TAG onAdLoaded:\nisCounting: ${isCounting()}, activityState: ${mWeakActivity?.get()?.lifecycle?.currentState}" )
-            // Save flag loaded to AdsConfig
+            AdDebugLog.logi("$TAG onAdLoaded")
+            // Save flag loaded
             AdsConfig.getInstance().onAdLoaded(mAdId)
 
             // Set instance
-            mInterstitialAd = interstitialAd
-            mInterstitialAd?.fullScreenContentCallback = fullScreenContentCallback
+            mAppOpenAd = appOpenAd
+            mAppOpenAd?.fullScreenContentCallback = fullScreenContentCallback
 
             // Notify event
             mOPAListener?.onAdOPALoaded()
-            notifyAdLoaded(mAdId)
+            notifyAdLoaded()
         }
 
         override fun onAdFailedToLoad(error: LoadAdError) {
@@ -155,32 +134,32 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
             // Save flag load failed
             AdsConfig.getInstance().onAdFailedToLoad(mAdId)
 
-            mInterstitialAd = null
+            mAppOpenAd = null
             // Notify event
-            notifyAdLoadFailed(mAdId, error.code, errorMsg)
-            // Check flow counter OPA
-            if (isCounting()) {
-                stopCounter()
-                onOPAFinished(mWeakActivity?.get())
-            }
+            notifyAdLoadFailed(error.code)
         }
     }
 
     private val fullScreenContentCallback = object : FullScreenContentCallback() {
         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
             super.onAdFailedToShowFullScreenContent(adError)
+            AdDebugLog.loge("$TAG onAdFailedToLoad: ${adError.message}")
             // TH gọi show nhưng bị lỗi không thể hiển thị
+            // WARNING: Xảy ra TH vẫn show AppOpenAd nhưng lại gọi vào onAdFailedToShow (trên các device bị chậm)
             onAdClosed()
         }
 
         override fun onAdShowedFullScreenContent() {
             super.onAdShowedFullScreenContent()
-            if (isShownOnStartUp) {
+            if (isShowAsOPA) {
                 // Show OPA -> lưu lại timestamp để check freq time
-                AdsConfig.getInstance().saveInterOPAShowedTimestamp()
+                AdsConfig.getInstance().setLastTimeOPAShow()
+            } else {
+                // Show khi mở lại từ background -> lưu lại timestamp để check freq time
+                AdsConfig.getInstance().saveAppOpenAdShowedTimestamp()
             }
             // Reset
-            mInterstitialAd = null
+            mAppOpenAd = null
             loadedTimestamp = 0
             // Notify event
             mOPAListener?.onAdOPAOpened()
@@ -199,9 +178,10 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
         isShowingAd = false
         loadedTimestamp = 0
         // Notify event
-        if (isShownOnStartUp) {
-            isShownOnStartUp = false
-            mOPAListener?.onAdOPACompleted() // OPA onAdClosed
+        if (isShowAsOPA) {
+            isShowAsOPA = false
+            mOPAListener?.onAdOPACompleted()
+            mOPAListener = null
         }
         notifyAdClosed()
 
@@ -209,51 +189,75 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
         preLoad()
     }
 
-    private fun startOPALoadingCounter(activity: AppCompatActivity) {
-        if (mCountingState != CountingState.NONE) return
-
-        isShownOnStartUp = false
-        if (!AdsConfig.getInstance().canShowOPA()) {
-            AdDebugLog.loge(TAG + "RETURN counter when can't showOPA")
-            onOPAFinished(activity)
-            return
-        }
-
-        mCountingState = CountingState.COUNTING
-        val counterTimeout = AdsConfig.getInstance().interOPAProgressDelayInMs + AdsConfig.getInstance().interOPASplashDelayInMs
-        val minimumDelay = if (counterTimeout < mMinDelayTime) counterTimeout else mMinDelayTime
-        val interval = 100L
-        AdDebugLog.loge("$TAG\nSTART CountDownTimer, timeout = $counterTimeout")
-        stopCounter()
-        mCounter = object : CountDownTimer(counterTimeout, interval) {
-            override fun onTick(millisUntilFinished: Long) {
-                // Check if ad OPA loaded
-                val passedTime = counterTimeout - millisUntilFinished
-                if (passedTime >= minimumDelay && isLoaded() && activity.lifecycle.currentState.isAtLeast(State.RESUMED)) {
-                    AdDebugLog.loge("$TAG\nInterstitial loaded when counting -> stop counter and show immediate\npassedTime: $passedTime")
-                    stopCounter()
-                    onOPAFinished(activity)
-                }
-            }
-
-            override fun onFinish() {
-                AdDebugLog.logd("$TAG\nFINISHED CountDownTimer")
-                onOPAFinished(activity)
-            }
-        }
-        mCounter?.start()
+    private fun isLoadingAds(): Boolean {
+        return mLoadingState == LoadingState.LOADING
     }
 
-    private fun onOPAFinished(activity: AppCompatActivity?) {
-        if (mCountingState == CountingState.COUNT_FINISHED) return
+    private fun getAdId(): String {
+        return if (AdsConfig.getInstance().isTestMode) {
+            AdsConstants.app_open_ads_test_id
+        } else {
+            mAdId
+        }
+    }
 
-        AdDebugLog.loge("onOPAFinished")
-        mCountingState = CountingState.COUNT_FINISHED
-        isShownOnStartUp = show(activity)
-        if (!isShowingAd) {
-            mOPAListener?.onAdOPACompleted() // onOPAFinished Ads not showing
+    fun showAsOPA(activity: AppCompatActivity?): Boolean {
+        try {
+            activity?.let {
+                if (isLoaded() && AdsConfig.getInstance().canShowOPA()) {
+                    isShowingAd = true
+                    isShowAsOPA = true
+                    showLoading(it)
+                    mAppOpenAd?.show(activity)
+                    AdDebugLog.loge(TAG + "show AppOpenAd as OPA")
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            AdDebugLog.loge(e)
+            isShowingAd = false
+            isShowAsOPA = false
+            mOPAListener = null
             hideLoading()
         }
+        return false
+    }
+
+    fun showWhenResume(activity: AppCompatActivity?): Boolean {
+        try {
+            activity?.let {
+                if (isLoaded() && AdsConfig.getInstance().canShowAppOpenAd()) {
+                    resetStates()
+                    isShowingAd = true
+                    showLoading(it)
+                    mAppOpenAd?.show(activity)
+                    AdDebugLog.logi(TAG + "show AppOpenAd when resume from background")
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            isShowingAd = false
+            hideLoading()
+        }
+        return false
+    }
+
+    fun show(activity: AppCompatActivity?): Boolean {
+        try {
+            activity?.let {
+                if (isLoaded()) {
+                    isShowingAd = true
+                    showLoading(it)
+                    mAppOpenAd?.show(activity)
+                    AdDebugLog.logi(TAG + "show AppOpenAd")
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            isShowingAd = false
+            hideLoading()
+        }
+        return false
     }
 
     private fun registerLifecycleObserver(activity: AppCompatActivity?) {
@@ -266,6 +270,7 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
             super.onDestroy(owner)
             mWeakActivity?.clear()
             mWeakActivity = null
+            isShowAsOPA = false
             owner.lifecycle.removeObserver(this)
         }
     }
@@ -274,34 +279,16 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
      * Check if ad exists and can be shown.
      */
     fun isLoaded(): Boolean {
-        return mInterstitialAd != null && isAvailable()
+        return mAppOpenAd != null && isAvailable()
     }
 
     /**
-     * Utility method to check if ad was loaded more than 1 hours ago.
+     * Utility method to check if ad was loaded more than 4 hours ago.
      */
-    private fun isAvailable(): Boolean {
+    private fun isAvailable(numHours: Float = 4f): Boolean {
         val dateDifference = SystemClock.elapsedRealtime() - loadedTimestamp
         val numMilliSecondsPerHour: Long = 3600000
-        return dateDifference < numMilliSecondsPerHour
-    }
-
-    fun show(activity: AppCompatActivity?): Boolean {
-        try {
-            activity?.let {
-                if (isLoaded() && AdsConfig.getInstance().canShowOPA() && it.lifecycle.currentState.isAtLeast(State.STARTED)) {
-                    isShowingAd = true
-                    showLoading(it)
-                    mInterstitialAd?.show(activity)
-                    AdDebugLog.logi(TAG + "show InterstitialOpenApp")
-                    return true
-                }
-            }
-        } catch (e: Exception) {
-            isShowingAd = false
-            hideLoading()
-        }
-        return false
+        return dateDifference < numMilliSecondsPerHour * numHours
     }
 
     @SuppressLint("InflateParams")
@@ -346,24 +333,14 @@ class InterstitialOPA(context: Context, adId: String , opaListener: AdOPAListene
         if (mLoadingFragment?.isVisible == true) {
             mLoadingFragment?.dismiss()
         }
-        try {
-            mLoadingFragment?.let { FragmentUtils.remove(it) }
-        } catch (e: Exception) {
-            AdDebugLog.loge(e)
-        }
         mLoadingFragment = null
     }
 
-    private fun stopCounter() {
-        mCounter?.cancel()
-        mCounter = null
-    }
-
     fun destroy() {
-        stopCounter()
         resetStates()
         hideLoading()
-        mInterstitialAd = null
+        mAppOpenAd = null
         mHandler.removeCallbacksAndMessages(null)
     }
+
 }

@@ -1,4 +1,4 @@
-package com.mmt.ads.wapper
+package com.mmt.ads.wrapper
 
 abstract class AbsAdListeners {
 
@@ -86,15 +86,6 @@ abstract class AbsAdListeners {
         try {
             mAdListeners.values.forEach { listener ->
                 listener?.onAdClosed()
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    open fun notifyAdStartLoad() {
-        try {
-            mAdListeners.values.forEach { listener ->
-                listener?.onAdStartLoad()
             }
         } catch (_: Exception) {
         }

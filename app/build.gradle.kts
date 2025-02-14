@@ -117,9 +117,12 @@ dependencies {
     // Lifecycle process
     implementation(libs.androidx.lifecycle.process)
 
+    //Splash
+    implementation(libs.splashscreen)
+
     // Standard dependencies
     dependOn(
-        deps.AndroidX,
+        deps.Core,
         deps.Hilt,
         deps.Navigation,
         deps.Log,

@@ -1,6 +1,7 @@
 package com.mmt.app.utils.log
 
 import android.util.Log
+import com.mmt.BuildConfig
 
 object Logger {
     private const val TAG = "ThemeLogger"

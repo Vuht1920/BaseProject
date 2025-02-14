@@ -1,25 +1,31 @@
 package com.mmt.app.utils.exception
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
+import android.widget.Toast
 import com.blankj.utilcode.util.ActivityUtils
-import com.mmt.ads.utils.Utils
-import com.mmt.app.HomeActivity
+import com.mmt.app.data.repository.dataStore.PrefDataStore
+import com.mmt.app.ui.HomeActivity
+import com.mmt.app.utils.Utils
 import com.mmt.app.utils.log.DebugLog
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.util.Date
+import javax.inject.Inject
 import kotlin.system.exitProcess
 
-@SuppressLint("LogNotTimber")
-class UnCaughtException(private val context: Context) : Thread.UncaughtExceptionHandler {
+class UnCaughtException @Inject constructor(@ApplicationContext private val context: Context) : Thread.UncaughtExceptionHandler {
+
+    @Inject
+    lateinit var prefDataStore: PrefDataStore
+
     private var path: String? = null
     override fun uncaughtException(t: Thread, e: Throwable) {
         try {
@@ -27,7 +33,7 @@ class UnCaughtException(private val context: Context) : Thread.UncaughtException
             val curDate = Date()
             report.append("Error Report collected on : ").append(curDate).append('\n').append('\n')
             report.append("Information :").append('\n')
-            report.append(Utils.getDeviceId(context))
+            report.append(com.mmt.ads.utils.Utils.getDeviceId(context))
             report.append('\n').append('\n')
             report.append("Stack:\n")
             val result: Writer = StringWriter()
@@ -52,7 +58,7 @@ class UnCaughtException(private val context: Context) : Thread.UncaughtException
      * */
     private fun restartApp() {
         if (!shouldAutoRestartApp()) {
-            SharedPreference.setInt(context, AUTO_RESTART, 0)
+            prefDataStore.setFlagAutoRestartApp(0)
             killApp()
             return
         }
@@ -60,7 +66,7 @@ class UnCaughtException(private val context: Context) : Thread.UncaughtException
         val intent = Intent(context, HomeActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val restartIntent = PendingIntent.getActivity(context, 113, intent, getPendingIntentFlag())
+        val restartIntent = PendingIntent.getActivity(context, 113, intent, Utils.getPendingIntentFlag())
         val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         manager[AlarmManager.RTC, System.currentTimeMillis() + 1] = restartIntent
         killApp()
@@ -91,15 +97,11 @@ class UnCaughtException(private val context: Context) : Thread.UncaughtException
      * Tự restart app tối đa 3 lần liên tục
      * */
     private fun shouldAutoRestartApp(): Boolean {
-        return SharedPreference.getInt(context, AUTO_RESTART, 0) < 3
+        return prefDataStore.autoRestartApp < 3
     }
 
     private fun setFlagAutoRestartApp() {
-        val currentCount = SharedPreference.getInt(context, AUTO_RESTART, 0)
-        SharedPreference.setInt(context, AUTO_RESTART, currentCount + 1)
-    }
-
-    companion object {
-        private const val AUTO_RESTART = "AUTO_RESTART"
+        val currentCount = prefDataStore.autoRestartApp
+        prefDataStore.setFlagAutoRestartApp(currentCount + 1)
     }
 }

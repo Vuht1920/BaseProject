@@ -10,12 +10,10 @@
         android:layout_gravity="center"
         android:background="@drawable/bg_black_alpha_corner"
         android:gravity="center_vertical"
-        android:minHeight="50dp"
+        android:minHeight="@dimen/native_small_height"
         android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingTop="3dp"
+        android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:paddingBottom="3dp"
         tools:ignore="SpUsage">
 
         <ImageView
@@ -41,15 +39,16 @@
 
                 <TextView
                     android:id="@+id/ad_headline"
+                    style="@style/AppTheme.AdTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ellipsize="end"
-                    android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="#000000"
+                    android:textColor="#ffffff"
                     android:textStyle="bold"
-                    tools:ignore="SpUsage" />
+                    tools:ignore="SpUsage"
+                    tools:text="Music Player - MP3 Player" />
 
                 <TextView
                     style="@style/AppTheme.AdAttribution"
@@ -66,30 +65,32 @@
 
             <TextView
                 android:id="@+id/ad_body"
-                android:layout_width="wrap_content"
+                style="@style/AppTheme.AdBody"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="4dp"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="#000000"
-                android:textSize="12dp"
-                tools:ignore="SpUsage" />
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                tools:ignore="SpUsage"
+                tools:text="Stay up to datewith your Ads Check how your ads are performing. Stay up to date with your Ads Check how your ads are performing" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/ad_call_to_action"
+            style="@style/AppTheme.CallToAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_btn_install"
             android:gravity="center"
             android:paddingLeft="5dp"
             android:paddingTop="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/native_ads_action_open"
+            tools:text="Open"
             android:textColor="#FFFFFF"
             android:textSize="12dp" />
     </LinearLayout>
+
 </com.google.android.gms.ads.nativead.NativeAdView>

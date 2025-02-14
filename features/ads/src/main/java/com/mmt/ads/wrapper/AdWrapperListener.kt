@@ -1,7 +1,6 @@
-package com.mmt.ads.wapper
+package com.mmt.ads.wrapper
 
 abstract class AdWrapperListener {
-    open fun onAdStartLoad() {}
     open fun onAdLoaded() {}
     open fun onAdFailedToLoad(error: Int) {}
     open fun onAdClicked() {}

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="native_medium_height">260dp</dimen>
-    <dimen name="native_dialog_height">150dp</dimen>
+    <dimen name="native_player_medium_height">250dp</dimen>
+    <dimen name="native_player_small_height">150dp</dimen>
+    <dimen name="native_small_height">65dp</dimen>
     <dimen name="native_exit_dialog_height">250dp</dimen>
+    <!--Required native videos, the main asset MediaView must be at least 120x120dp (Android)-->
     <dimen name="native_content_media_height">120dp</dimen>
-    <dimen name="item_height">75dp</dimen>
 </resources>

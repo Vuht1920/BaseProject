@@ -39,7 +39,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     dependOn(
-        deps.AndroidX,
+        deps.Core,
         deps.BlankJUtil,
         deps.DataStore,
     )

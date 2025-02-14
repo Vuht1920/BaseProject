@@ -2,6 +2,5 @@
 <resources>
     <string name="msg_dialog_please_wait">Please wait…</string>
     <string name="msg_dialog_loading_data">Loading data…</string>
-    <string name="native_ads_action_open" >Open</string>
-    <string name="msg_loading_ad">Loading Ads…</string>
+    <string name="msg_dialog_loading_ads">Loading Ads…</string>
 </resources>

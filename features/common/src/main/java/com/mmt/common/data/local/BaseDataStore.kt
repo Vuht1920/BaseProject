@@ -14,7 +14,7 @@ import java.io.IOException
 
 abstract class BaseDataStore {
     open var dataStore: DataStore<Preferences>? = null
-    open fun <T> getPreference(key: Preferences.Key<T>, default: T): Flow<T?> {
+    fun <T> getPreference(key: Preferences.Key<T>, default: T): Flow<T?> {
         dataStore?.let { it ->
             return it.data.catch { exception ->
                 /*
@@ -44,6 +44,12 @@ abstract class BaseDataStore {
     }
 
     open suspend fun <T> setPreference(key: Preferences.Key<T>, value: T) {
+        dataStore?.edit { preferences ->
+            preferences[key] = value
+        }
+    }
+
+    open fun <T> setPreferenceBlocking(key: Preferences.Key<T>, value: T) = runBlocking {
         dataStore?.edit { preferences ->
             preferences[key] = value
         }
