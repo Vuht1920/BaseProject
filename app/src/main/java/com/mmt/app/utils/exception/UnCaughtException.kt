@@ -6,10 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
-import android.widget.Toast
 import com.blankj.utilcode.util.ActivityUtils
 import com.mmt.app.data.repository.dataStore.PrefDataStore
-import com.mmt.app.ui.HomeActivity
+import com.mmt.app.ui.MainActivity
 import com.mmt.app.utils.Utils
 import com.mmt.app.utils.log.DebugLog
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -63,7 +62,7 @@ class UnCaughtException @Inject constructor(@ApplicationContext private val cont
             return
         }
         setFlagAutoRestartApp()
-        val intent = Intent(context, HomeActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         val restartIntent = PendingIntent.getActivity(context, 113, intent, Utils.getPendingIntentFlag())

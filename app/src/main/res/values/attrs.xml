@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!---Thuộc tính chung cho các theme-->
+    <attr name="home_text_main_color" format="color" />
+    <attr name="home_text_second_color" format="color" />
+    <attr name="home_accent_color" format="color" />
+</resources>

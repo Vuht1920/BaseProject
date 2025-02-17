@@ -40,4 +40,6 @@
     <color name="color_accent_dialog">#1A7694</color>
 
     <color name="default_background_color">#131720</color>
+    <color name="text_color_main">@color/white</color>
+    <color name="text_color_secondary">#8A000000</color>
 </resources>

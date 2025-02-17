@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme.NoBackground.Dark">
+        <item name="android:textColorHint">?android:attr/textColorHintInverse</item>
+        <item name="android:textColorHighlight">?android:attr/textColorHighlightInverse</item>
+        <item name="android:textColorLink">?android:attr/textColorLinkInverse</item>
+        <item name="android:textColorPrimary">?home_text_main_color</item>
+        <item name="android:colorForeground">#FFFFFFFF</item>
+        <item name="colorAccent">?home_accent_color</item>
+        <item name="android:colorAccent">?home_accent_color</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="home_accent_color">@color/yellow</item>
+        <item name="home_text_main_color">@color/text_color_main</item>
+        <item name="home_text_second_color">@color/text_color_secondary</item>
+    </style>
+
+    <style name="AppTheme.NoBackground.Dark.Accent1">
+        <item name="home_accent_color">@color/yellow</item>
+        <item name="home_text_main_color">@color/text_color_main</item>
+        <item name="home_text_second_color">@color/text_color_secondary</item>
+    </style>
+</resources>

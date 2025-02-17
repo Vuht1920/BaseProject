@@ -120,6 +120,9 @@ dependencies {
     //Splash
     implementation(libs.splashscreen)
 
+    // Delegate View
+    implementation(libs.view.binding.delegate)
+
     // Standard dependencies
     dependOn(
         deps.Core,
