@@ -6,4 +6,5 @@
     app:startDestination="@+id/home">
     <include app:graph="@navigation/nav_home" />
     <include app:graph="@navigation/nav_history" />
+    <include app:graph="@navigation/nav_settings" />
 </navigation>

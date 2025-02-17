@@ -3,7 +3,7 @@ package deps
 object Ads : Dependency() {
 
     object Versions {
-        const val ADMOB = "23.6.0"
+        const val ADMOB = "23.3.0"
         const val UMP = "3.0.0"
     }
 
@@ -11,7 +11,7 @@ object Ads : Dependency() {
     private const val ump = "com.google.android.ump:user-messaging-platform:${Versions.UMP}"
 
 
-    override fun implementations() = listOf(
+    override fun api() = listOf(
         admob,
         ump
     )
