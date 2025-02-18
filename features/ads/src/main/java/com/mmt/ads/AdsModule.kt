@@ -169,6 +169,19 @@ class AdsModule private constructor() {
         }
     }
 
+    fun getBannerExitDialog(context: Context?): AdViewWrapper? {
+        if (AdsConfig.getInstance().canShowAd()
+            && AdsConfig.getInstance().isAdEnable(AdsType.BANNER_EXIT_DIALOG)
+        ) {
+            context?.let {
+                if (mAdViewExitDialog == null) {
+                    mAdViewExitDialog = AdViewWrapper(it, AdsId.banner_exit_dialog)
+                }
+            }
+        }
+        return mAdViewExitDialog
+    }
+
     fun showBannerEmptyScreen(container: ViewGroup?) {
         if (AdsConfig.getInstance().canShowAd() && AdsConfig.getInstance().isAdEnable(AdsType.BANNER_EMPTY_SCREEN)) {
             mApplication?.let {

@@ -42,4 +42,8 @@
     <color name="default_background_color">#131720</color>
     <color name="text_color_main">@color/white</color>
     <color name="text_color_secondary">#8A000000</color>
+    <color name="color_hint_text">#697077</color>
+    <color name="color_echo_blue">#A2A8C2</color>
+    <color name="color_A2A9B0">#A2A9B0</color>
+    <color name="color_malibu">#52ACF6</color>
 </resources>

@@ -15,7 +15,6 @@ object Core : Dependency() {
     private const val multidex = "androidx.multidex:multidex:${Versions.MULTIDEX}"
     private const val appcompat = "androidx.appcompat:appcompat:${Versions.ANDROIDX_COMPAT}"
     private const val material_dialogs = "com.afollestad.material-dialogs:core:${Versions.MATERIAL_DIALOGS_VERSION}"
-    private const val material_dialogs_common = "com.afollestad.material-dialogs:commons:${Versions.MATERIAL_DIALOGS_VERSION}"
 
 
     override fun api() = listOf(
@@ -23,8 +22,7 @@ object Core : Dependency() {
         material,
         multidex,
         appcompat,
-//        material_dialogs,
-//        material_dialogs_common
+        material_dialogs
     )
 
 //    override fun annotationProcessors() = listOf("com.afollestad.material-dialogs:commons:0.9.6.0")

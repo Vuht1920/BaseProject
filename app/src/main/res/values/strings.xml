@@ -2,4 +2,9 @@
     <string name="app_name">BaseProject</string>
     <string name="home">Home</string>
     <string name="history">History</string>
+    <string name="msg_exit_app">Do you want to leave app?</string>
+    <string name="lbl_exit_app_cb">Never ask again</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="exit_app_thank_you">Thank you for using our app!</string>
 </resources>

@@ -2,6 +2,7 @@ package com.mmt.app.ui
 
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -26,10 +27,15 @@ import com.mmt.ads.utils.Utils
 import com.mmt.ads.wrapper.AdOPAListener
 import com.mmt.app.BaseApplication
 import com.mmt.app.base.BaseActivity
+import com.mmt.app.data.repository.dataStore.PrefDataStore
+import com.mmt.app.ui.dialog.ExitAppDialog
 import com.mmt.app.utils.log.DebugLog
 import com.mmt.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 import dev.androidbroadcast.vbpd.viewBinding
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
     private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
     private val navController by lazy { (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController }
@@ -48,12 +54,22 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
 
     private var isActivityRecreated = false // Flag đánh dấu bỏ qua show dialog xin quyền khi Activity recreate lại
 
+    @Inject
+    lateinit var prefDataStore: PrefDataStore
+
+    @Inject
+    lateinit var dialogExitApp: ExitAppDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         isActivityRecreated = savedInstanceState != null
         setTheme(R.style.AppTheme_NoBackground_Dark_Accent1)
 
+        // BackPressed
+        onBackPressedDispatcher.addCallback(onBackPressedCallback)
+
+        // InitView
         initView()
 
         // Init Ads module
@@ -89,6 +105,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
             if (mGoogleConsentManager.canRequestAds()) {
                 DebugLog.loge("initializeMobileAdsSdk immediate")
                 mConsentStatus = ConsentStatus.GATHERED
+                AdsModule.getInstance().resetInitState()
                 initializeMobileAdsSdk(true)
             } else {
                 initConsentForm()
@@ -249,6 +266,32 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
 
     private fun destroyAds() {
         AdsModule.getInstance().destroyAds(hashCode())
+    }
+
+    private fun showExitDialog() {
+        if (dialogExitApp.isShowing()) return
+        dialogExitApp.show(this)
+    }
+
+    private fun dismissExitDialog() {
+        if (dialogExitApp.isShowing()) dialogExitApp.dismiss()
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (AdsModule.getInstance().mInterstitialOPA?.isCounting() == true) {
+                return
+            }
+            onQuitApp()
+        }
+    }
+
+    private fun onQuitApp() {
+        if (prefDataStore.isShowExitDialog) {
+            showExitDialog()
+        } else {
+            finish()
+        }
     }
 
     override fun onDestroy() {
