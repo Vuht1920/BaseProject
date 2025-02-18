@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="DefaultSplashTheme" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground" tools:ignore="NewApi">@color/colorPrimaryDark</item>
+        <item name="windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@drawable/app_icon_splash_png</item>
+        <item name="windowSplashScreenIconBackgroundColor" tools:ignore="NewApi">@color/transparent</item>
+    </style>
+
+</resources>
