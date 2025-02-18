@@ -88,7 +88,7 @@ class AdsModule private constructor() {
                 }
             }
             Utils.init(application)
-            AdsConfig.getInstance().initAdsState(mApplication!!)
+            AdsConfig.getInstance().initAdsState()
 
             if (initializeCompleted()) {
                 callback?.onInitializeCompleted()

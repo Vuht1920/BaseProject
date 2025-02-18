@@ -78,7 +78,7 @@ class PrefRepository(context: Context) : BaseDataStore() {
     private val lastTimeOPAShowTimeStampKey = longPreferencesKey(INTERSTITIAL_OPA_SHOWED_TIMESTAMP)
     private val interstitialShowedTimestampKey = longPreferencesKey(INTERSTITIAL_SHOWED_TIMESTAMP)
     private val freqInterOPAInMillisecondsKey = longPreferencesKey(FREQ_INTER_OPA_IN_MILLISECONDS)
-    private val interOPASplashDelayInMsKey = longPreferencesKey(SPLASH_DELAY_IN_MS)
+    private val splashDelayInMsKey = longPreferencesKey(SPLASH_DELAY_IN_MS)
     private val interOPAProgressDelayInMsKey = longPreferencesKey(INTER_OPA_PROGRESS_DELAY_IN_MS)
     private val freqCapInterInMsKey = longPreferencesKey(FREQ_CAP_INTER_IN_MS)
     private val adsEnableStateKey = stringPreferencesKey(ADS_ENABLE_STATE)
@@ -90,14 +90,17 @@ class PrefRepository(context: Context) : BaseDataStore() {
     fun setAppOpenAdShowedTimeStampKey(value: Long) = runBlocking { setPreference(appOpenAdShowedTimeStampKey, value) }
     val appOpenAdShowedTimeStamp get() = getPreferenceBlocking(appOpenAdShowedTimeStampKey, 0L)
 
+    fun setFreqInterOPAInMilliseconds(value: Long) = runBlocking { setPreference(freqInterOPAInMillisecondsKey, value) }
+    val freqInterOPAInMilliseconds get() = getPreferenceBlocking(freqInterOPAInMillisecondsKey, 0L)
+
     fun setLastTimeOPAShowTimeStamp(value: Long) = runBlocking { setPreference(lastTimeOPAShowTimeStampKey, value) }
     val lastTimeOPAShowTimeStamp get() = getPreferenceBlocking(lastTimeOPAShowTimeStampKey, DEFAULT_FREQ_CAP_INTER_OPA_IN_MS)
 
     fun setInterstitialShowedTimestamp(value: Long) = runBlocking { setPreference(interstitialShowedTimestampKey, value) }
     val interstitialShowedTimestamp get() = getPreferenceBlocking(interstitialShowedTimestampKey, 0L)
 
-    fun setSplashDelayInMs(value: Long) = runBlocking { setPreference(interOPASplashDelayInMsKey, value) }
-    val splashDelayInMs get() = getPreferenceBlocking(interOPASplashDelayInMsKey, DEFAULT_SPLASH_DELAY_IN_MS)
+    fun setSplashDelayInMs(value: Long) = runBlocking { setPreference(splashDelayInMsKey, value) }
+    val splashDelayInMs get() = getPreferenceBlocking(splashDelayInMsKey, DEFAULT_SPLASH_DELAY_IN_MS)
 
     fun setInterOPAProgressDelayInMs(value: Long) = runBlocking { setPreference(interOPAProgressDelayInMsKey, value) }
     val interOPAProgressDelayInMs get() = getPreferenceBlocking(interOPAProgressDelayInMsKey, DEFAULT_INTER_OPA_PROGRESS_DELAY_IN_MS)

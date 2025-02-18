@@ -71,6 +71,7 @@ class BaseApplication : AbsApplication() {
                 ._setTestGDPR(isTestMode)
                 ._setTestMode(isTestMode)
                 .setShowLog(isTestMode)
+                .setAdsEnableState(TestConfig.DEFAULT_ADS_ENABLE_STATE)
             /*.setWaitingTimeWhenLoadFailed(FirebaseRemoteConfigHelper.instance.getWaitingTimeWhenLoadAdsFailedInMs())
             .setAdsEnableState(FirebaseRemoteConfigHelper.instance.getADsEnableState())
             .setFreqInterOPAInMs(FirebaseRemoteConfigHelper.instance.freqInterOPAInMs)

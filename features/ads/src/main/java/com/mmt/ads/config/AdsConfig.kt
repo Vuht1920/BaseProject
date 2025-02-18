@@ -1,7 +1,6 @@
 package com.mmt.ads.config
 
 import android.app.Application
-import android.content.Context
 import android.graphics.Color
 import android.os.SystemClock
 import com.mmt.ads.GoogleConsentManager
@@ -80,7 +79,7 @@ class AdsConfig {
         return this@AdsConfig
     }
 
-    fun initAdsState(context: Context): AdsConfig {
+    fun initAdsState(): AdsConfig {
         if (mAdsEnableState.isEmpty()) {
             setAdsEnableState(prefRepository.adsEnableState)
         }
@@ -228,7 +227,7 @@ class AdsConfig {
      * */
     fun setFreqInterOPAInMs(time: Long): AdsConfig {
         if (mApplication != null) {
-            prefRepository.setFreqCapInterInMs(time)
+            prefRepository.setFreqInterOPAInMilliseconds(time)
         }
         return this@AdsConfig
     }
@@ -277,7 +276,7 @@ class AdsConfig {
      * return true if current time minus the latest time OPA displayed > FREQ_INTER_OPA_IN_MILLISECONDS has been set
      * */
     fun canShowOPA(): Boolean {
-        val freqInterOPAInMilliseconds = prefRepository.lastTimeOPAShowTimeStamp
+        val freqInterOPAInMilliseconds = prefRepository.freqInterOPAInMilliseconds
         if (freqInterOPAInMilliseconds == 0L) {
             return true
         }
