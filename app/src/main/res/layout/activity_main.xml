@@ -9,10 +9,10 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!--    <androidx.appcompat.widget.Toolbar-->
-    <!--        android:id="@+id/tool_bar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content" />-->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -29,6 +29,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/fr_bottom_ads"
+        android:background="@color/bg_bottom_navigation"
+        app:itemIconTint="?home_accent_color"
         app:menu="@menu/menu_bottom_nav" />
 
     <FrameLayout

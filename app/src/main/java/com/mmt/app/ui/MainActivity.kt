@@ -64,7 +64,6 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         isActivityRecreated = savedInstanceState != null
-        setTheme(R.style.AppTheme_NoBackground_Dark_Accent1)
 
         // BackPressed
         onBackPressedDispatcher.addCallback(onBackPressedCallback)

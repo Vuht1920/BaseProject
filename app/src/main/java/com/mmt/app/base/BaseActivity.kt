@@ -1,10 +1,12 @@
 package com.mmt.app.base
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
+import com.mmt.R
 import com.mmt.ads.AdsModule
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,6 +17,11 @@ open class BaseActivity(@LayoutRes contentLayoutId: Int) : AppCompatActivity(con
 
     open fun getBottomAdContainer(): ViewGroup? {
         return null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setTheme(R.style.AppTheme_NoBackground_Dark_Accent1)
     }
 
     open fun showBottomBanner() {

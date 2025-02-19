@@ -3,8 +3,8 @@
     <color name="colorPrimary">#123868</color>
     <color name="colorPrimaryDark">#0D2748</color>
     <color name="colorAccent">#319CFF</color>
-    <color name="colorActive">#FFD400</color>
 
+    <color name="splash_background">#1A7694</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#E0E0E0</color>
@@ -17,6 +17,7 @@
     <color name="orange">#fc7821</color>
     <color name="green">#00FF00</color>
     <color name="yellow">#FFB000</color>
+    <color name="cyber_yellow">#FFD400</color>
     <color name="black_gray">#9E9FA0</color>
     <color name="bounded_grey">#717075</color>
     <color name="brown">#6C492E</color>
@@ -41,8 +42,8 @@
     <color name="default_background_color">#131720</color>
     <color name="text_color_main">@color/white</color>
     <color name="text_color_secondary">#8A000000</color>
-    <color name="color_hint_text">#697077</color>
-    <color name="color_echo_blue">#A2A8C2</color>
     <color name="color_A2A9B0">#A2A9B0</color>
-    <color name="color_malibu">#52ACF6</color>
+
+    <color name="bg_bottom_navigation">#23000000</color>
+
 </resources>
