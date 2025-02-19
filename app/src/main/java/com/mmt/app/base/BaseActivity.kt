@@ -11,7 +11,7 @@ import com.mmt.ads.AdsModule
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-open class BaseActivity(@LayoutRes contentLayoutId: Int) : AppCompatActivity(contentLayoutId) {
+open class BaseActivity() : AppCompatActivity() {
     val TAG = this::class.java.simpleName
     protected val mHandler = Handler(Looper.myLooper() ?: Looper.getMainLooper())
 
@@ -21,7 +21,6 @@ open class BaseActivity(@LayoutRes contentLayoutId: Int) : AppCompatActivity(con
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme_NoBackground_Dark_Accent1)
     }
 
     open fun showBottomBanner() {

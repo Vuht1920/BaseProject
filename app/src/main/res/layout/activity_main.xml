@@ -5,14 +5,9 @@
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_background_color"
+    android:background="@drawable/bg_splash"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -26,10 +21,11 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
+        app:elevation="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/fr_bottom_ads"
-        android:background="@color/bg_bottom_navigation"
+        android:background="@color/transparent"
         app:itemIconTint="?home_accent_color"
         app:menu="@menu/menu_bottom_nav" />
 

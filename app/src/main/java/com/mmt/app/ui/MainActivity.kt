@@ -36,8 +36,8 @@ import dev.androidbroadcast.vbpd.viewBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
-    private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
+class MainActivity : BaseActivity(), AdOPAListener {
+    private lateinit var binding: ActivityMainBinding
     private val navController by lazy { (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController }
     private val appBarConfiguration by lazy { AppBarConfiguration(setOf(R.id.home, R.id.history, R.id.setting)) }
 
@@ -63,10 +63,13 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        setTheme(R.style.AppTheme_NoBackground_Dark_Accent1)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.rootView)
         isActivityRecreated = savedInstanceState != null
 
         // BackPressed
-        onBackPressedDispatcher.addCallback(onBackPressedCallback)
+//        onBackPressedDispatcher.addCallback(onBackPressedCallback)
 
         // InitView
         initView()
@@ -82,7 +85,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), AdOPAListener {
         binding.bottomNav.setupWithNavController(navController)
 
         // Setup the ActionBar with navController and 2 top level destinations
-        setupActionBarWithNavController(navController, appBarConfiguration)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     override fun onSupportNavigateUp(): Boolean {
