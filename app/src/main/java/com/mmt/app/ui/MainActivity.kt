@@ -39,7 +39,6 @@ import javax.inject.Inject
 class MainActivity : BaseActivity(), AdOPAListener {
     private lateinit var binding: ActivityMainBinding
     private val navController by lazy { (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController }
-    private val appBarConfiguration by lazy { AppBarConfiguration(setOf(R.id.home, R.id.history, R.id.setting)) }
 
     // Logic show quảng cáo
     private val mGoogleConsentManager: GoogleConsentManager by lazy { GoogleConsentManager.getInstance(applicationContext) }
@@ -69,7 +68,7 @@ class MainActivity : BaseActivity(), AdOPAListener {
         isActivityRecreated = savedInstanceState != null
 
         // BackPressed
-//        onBackPressedDispatcher.addCallback(onBackPressedCallback)
+        onBackPressedDispatcher.addCallback(onBackPressedCallback)
 
         // InitView
         initView()
@@ -84,12 +83,6 @@ class MainActivity : BaseActivity(), AdOPAListener {
         // Setup the bottom navigation view with navController
         binding.bottomNav.setupWithNavController(navController)
 
-        // Setup the ActionBar with navController and 2 top level destinations
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration)
     }
 
     private fun initAdsModule() {

@@ -40,6 +40,13 @@
         <!-- Set the theme of the Activity that directly follows your splash screen. -->
         <!-- Required -->
         <item name="postSplashScreenTheme">@style/AppTheme</item>
+
+        <!-- Material Dialog attrs-->
+        <item name="md_color_title">?home_text_main_color</item>
+        <item name="md_color_content">?home_text_second_color</item>
+        <item name="md_color_button_text">?home_accent_color</item>
+        <item name="md_background_color">@color/colorPrimaryDark</item>
+        <item name="md_corner_radius">16dp</item>
     </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">

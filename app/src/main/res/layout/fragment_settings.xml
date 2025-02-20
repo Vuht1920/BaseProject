@@ -2,12 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?home_accent_color">
+    android:background="?home_accent_color"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="HOME"
-        android:textColor="?home_accent_color" />
+        android:text="@string/settings"
+        android:textColor="?home_text_main_color"
+        android:textSize="48sp" />
 </LinearLayout>

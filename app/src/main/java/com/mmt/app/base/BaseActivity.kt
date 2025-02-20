@@ -19,10 +19,6 @@ open class BaseActivity() : AppCompatActivity() {
         return null
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     open fun showBottomBanner() {
         AdsModule.getInstance().showBannerBottom(getBottomAdContainer())
     }

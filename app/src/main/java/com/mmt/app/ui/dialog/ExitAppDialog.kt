@@ -26,6 +26,7 @@ import com.mmt.app.utils.extensions.gone
 import com.mmt.app.utils.extensions.invisible
 import com.mmt.app.utils.extensions.visible
 import com.mmt.app.utils.log.DebugLog
+import com.mmt.databinding.DialogExitAppBinding
 import javax.inject.Inject
 
 
@@ -46,28 +47,24 @@ class ExitAppDialog @Inject constructor() : DefaultLifecycleObserver, AdWrapperL
         mActivity = activity
         mActivity?.lifecycle?.addObserver(this)
 
-        val exitDialogView = activity.layoutInflater.inflate(R.layout.dialog_exit_app, null)
-        adsContainer = exitDialogView.findViewById(R.id.fr_ads_container_exit)
-        ivThankYou = exitDialogView.findViewById(R.id.iv_thank_you)
+        val binding = DialogExitAppBinding.inflate(activity.layoutInflater)
 
         // Show medium banner
         showMediumAd()
 
         // Checkbox never show again
-        val cbNeverShowAgain = exitDialogView.findViewById<CheckBox>(R.id.cb_never_show_again)
-        cbNeverShowAgain.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        binding.cbNeverShowAgain.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             prefDataStore.setShowExitDialog(!isChecked)
         }
         try {
             mDialogExitApp = MaterialDialog(mActivity!!).show {
                 title(R.string.msg_exit_app)
-                customView(view = exitDialogView)
+                customView(view = binding.root)
                     .negativeButton(R.string.action_cancel)
                     .positiveButton(R.string.action_yes) {
                         finishApplication(activity)
                     }
                     .onDismiss { dismissListener.onDismiss(null) }
-                    .cornerRadius(16f)
 
             }
         } catch (e: Exception) {
