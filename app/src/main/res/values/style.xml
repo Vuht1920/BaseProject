@@ -23,7 +23,7 @@
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
 
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowBackground">@drawable/bg_default</item>
         <item name="colorControlHighlight">?android:colorAccent</item>
 
         <item name="colorControlActivated">@color/colorAccent</item>
@@ -34,7 +34,7 @@
         <!-- Set the splash screen background, animated icon, and animation duration. -->
         <item name="windowSplashScreenBackground">@color/colorPrimary</item>
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an animated drawable. One of these is required. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon_splash</item>
         <!-- Required for animated icons -->
         <item name="windowSplashScreenAnimationDuration">3000</item>
         <!-- Set the theme of the Activity that directly follows your splash screen. -->
@@ -51,7 +51,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowBackground">@drawable/bg_default</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="android:splitMotionEvents">false</item>
         <item name="android:windowEnableSplitTouch">false</item>

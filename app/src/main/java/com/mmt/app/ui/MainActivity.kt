@@ -215,7 +215,7 @@ class MainActivity : BaseActivity(), AdOPAListener {
         AdsModule.getInstance().getInterstitialOPA(applicationContext)?.apply {
             if (AdsConfig.getInstance().canShowOPA()) {
                 mOPAStatus = OPAStatus.LOADING
-                mProgressBgResourceId = R.drawable.bg_splash
+                mProgressBgResourceId = R.drawable.bg_default
                 mOPAListener = this@MainActivity
                 resetStates()
                 // Show
