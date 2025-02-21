@@ -110,6 +110,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.ui.graphics.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -131,6 +132,7 @@ dependencies {
         deps.Log,
         deps.Glide,
         deps.Coroutine,
+        deps.Room,
     )
 
     api(project(":features:ads"))

@@ -11,6 +11,7 @@ lifecycleProcess = "2.8.7"
 splashscreen = "1.2.0-alpha02"
 viewBindingDelegate = "2.0.4"
 playServicesAdsLite = "23.6.0"
+uiGraphicsAndroid = "1.7.8"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +21,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 view-binding-delegate = { group = "dev.androidbroadcast.vbpd", name = "vbpd", version.ref = "viewBindingDelegate" }
+androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
 
 
 [plugins]

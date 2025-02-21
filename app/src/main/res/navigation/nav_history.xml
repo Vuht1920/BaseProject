@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/historyFragment"
-        android:name="com.mmt.app.ui.history.HistoryFragment"
+        android:name="com.mmt.extractor.ui.history.HistoryFragment"
         android:label="@string/home"
         tools:layout="@layout/fragment_history">
     </fragment>
