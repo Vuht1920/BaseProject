@@ -13,7 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import java.lang.reflect.Array.setBoolean
 import javax.inject.Inject
 
 class PrefDataStore @Inject constructor(@ApplicationContext context: Context) : BaseDataStore() {

@@ -1,16 +1,12 @@
 package com.mmt.app.ui.dialog
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.DialogInterface.OnDismissListener
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.CompoundButton
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -21,7 +17,6 @@ import com.mmt.R
 import com.mmt.ads.AdsModule
 import com.mmt.ads.wrapper.AdWrapperListener
 import com.mmt.app.data.repository.dataStore.PrefDataStore
-import com.mmt.app.utils.dialog.DialogUtils
 import com.mmt.app.utils.extensions.gone
 import com.mmt.app.utils.extensions.invisible
 import com.mmt.app.utils.extensions.visible

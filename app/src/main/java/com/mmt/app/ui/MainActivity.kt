@@ -1,15 +1,10 @@
 package com.mmt.app.ui
 
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
@@ -32,7 +27,6 @@ import com.mmt.app.ui.dialog.ExitAppDialog
 import com.mmt.app.utils.log.DebugLog
 import com.mmt.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
-import dev.androidbroadcast.vbpd.viewBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
