@@ -9,41 +9,12 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/fr_top_view"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="@dimen/dp_24"
-            android:text="@string/app_name"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?home_text_main_color" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_search"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="match_parent"
-            android:layout_gravity="end|center_vertical"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:padding="16dp"
-            app:srcCompat="@drawable/ic_search_24" />
-    </FrameLayout>
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/view_divider"
-        android:layout_below="@id/fr_top_view"
         app:defaultNavHost="true"
         app:navGraph="@navigation/main_nav_graph"
         tools:layout="@layout/activity_main" />

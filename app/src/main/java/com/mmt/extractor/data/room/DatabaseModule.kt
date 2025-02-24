@@ -15,13 +15,13 @@ import javax.inject.Singleton
 class DatabaseModule {
     @Singleton
     @Provides
-    fun provideApkDao(apkDatabase: ExtractorDatabase): AppInfoDao {
+    fun provideApkDao(apkDatabase: AppDatabase): AppInfoDao {
         return apkDatabase.appInfoDao()
     }
 
     @Provides
     @Singleton
-    fun provideRoomDataBase(@ApplicationContext context: Context): ExtractorDatabase {
-        return Room.databaseBuilder(context, ExtractorDatabase::class.java, "extractor_db").build()
+    fun provideRoomDataBase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, "extractor_db").build()
     }
 }

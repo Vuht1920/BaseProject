@@ -39,7 +39,7 @@
     <color name="color_accent_dialog">#1A7694</color>
 
     <color name="text_color_main">@color/white</color>
-    <color name="text_color_secondary">#8A000000</color>
+    <color name="text_color_secondary">#A0FFFFFF</color>
     <color name="color_A2A9B0">#A2A9B0</color>
     <color name="bg_bottom_navigation">#23000000</color>
 

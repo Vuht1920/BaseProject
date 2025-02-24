@@ -30,8 +30,8 @@
                     android:id="@+id/tv_total"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="?attr/home_text_main_color"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="?home_accent_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/iv_search"
                     app:layout_constraintStart_toStartOf="parent"
@@ -45,10 +45,26 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="@dimen/action_toolbar_icon_padding"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/iv_sort"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_filter"
                     app:layout_constraintStart_toEndOf="@id/tv_total"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_search_24" />
+                    app:srcCompat="@drawable/ic_search_24"
+                    tools:visibility="visible" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_filter"
+                    android:layout_width="@dimen/action_toolbar_icon_size"
+                    android:layout_height="@dimen/action_toolbar_icon_size"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/action_toolbar_icon_padding"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_sort"
+                    app:layout_constraintStart_toEndOf="@id/iv_search"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_filter_24"
+                    tools:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_sort"
@@ -57,21 +73,11 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="@dimen/action_toolbar_icon_padding"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/iv_list_grid"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_sort" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_list_grid"
-                    android:layout_width="@dimen/action_toolbar_icon_size"
-                    android:layout_height="@dimen/action_toolbar_icon_size"
-                    android:layout_gravity="end"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:padding="@dimen/action_toolbar_icon_padding"
-                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_menu_list" />
+                    app:srcCompat="@drawable/ic_sort"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,7 +85,15 @@
                 android:id="@+id/rv_apps"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/dp_16"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <com.mmt.extractor.ui.custom.EmptyAdView
+                android:id="@+id/empty_adview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -29,14 +29,14 @@ class AppInfoAdapter : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDi
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(val binding: ItemAppBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ItemAppBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(appInfo: AppInfo) {
-            with(binding){
+            with(binding) {
                 tvAppNames.text = appInfo.appName
-               tvPackageName.text = appInfo.pkgName
+                tvPackageName.text = appInfo.pkgName
                 tvAppSize.text = String.format(Locale.getDefault(), "%.2f MB", appInfo.apkSize)
-                Glide.with(ivAppPreview.context).load(appInfo.appIcon)
+                ivAppPreview.setImageDrawable(appInfo.appIcon)
             }
         }
     }

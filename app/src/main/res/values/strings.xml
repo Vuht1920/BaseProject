@@ -8,4 +8,7 @@
     <string name="action_yes">Yes</string>
     <string name="action_cancel">Cancel</string>
     <string name="exit_app_thank_you">Thank you for using our app!</string>
+    <string name="msg_empty_data">No data!</string>
+    <string name="txt_app">app</string>
+    <string name="txt_apps">apps</string>
 </resources>

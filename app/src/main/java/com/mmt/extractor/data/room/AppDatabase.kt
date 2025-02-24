@@ -10,6 +10,6 @@ import com.mmt.extractor.data.room.dao.AppInfoDao
 
 @Database(entities = [AppInfoEntity::class], version = 1)
 @TypeConverters(UriConverter::class, ImageConverter::class)
-abstract class ExtractorDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun appInfoDao(): AppInfoDao
 }

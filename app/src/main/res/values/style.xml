@@ -78,4 +78,9 @@
         <item name="android:popupBackground">@drawable/bg_popup_menu</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <declare-styleable name="EmptyAdView">
+        <attr name="emptyText" format="string|reference" />
+        <attr name="emptyTextColor" format="color" />
+    </declare-styleable>
 </resources>

@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-fun <T> LifecycleOwner.safeCollect(flow: Flow<T>, collectCallBack: (T) -> Unit, flowOn: CoroutineDispatcher = Dispatchers.IO) {
+fun <T> LifecycleOwner.safeCollect(flow: Flow<T>, collect: (T) -> Unit, flowOn: CoroutineDispatcher = Dispatchers.IO) {
     this.lifecycleScope.launch(BaseApplication.coroutineExceptionHandler()) {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
             flow.flowOn(flowOn).collect {
-                    collectCallBack(it)
-                }
+                collect(it)
+            }
         }
     }
 }
