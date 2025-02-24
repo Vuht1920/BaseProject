@@ -124,6 +124,9 @@ dependencies {
     // Delegate View
     implementation(libs.view.binding.delegate)
 
+    // Swipe refresh layout
+    implementation(libs.androidx.swiperefreshlayout)
+
     // Standard dependencies
     dependOn(
         deps.Core,

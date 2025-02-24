@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import com.mmt.extractor.BaseApplication
 import com.mmt.extractor.data.model.AppInfoEntity
 import com.mmt.extractor.data.room.dao.AppInfoDao
 import com.mmt.extractor.utils.FileUtil
-import com.mmt.extractor.utils.log.DebugLog
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.io.File
 import javax.inject.Inject
 
@@ -18,7 +20,6 @@ class AppInfoRepository @Inject constructor(val context: Context, private val ap
         val packageManager = context.packageManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val set = HashSet<String>()
-            val names = HashSet<String>()
             packageManager.getPackagesHoldingPermissions(arrayOf(HIDE_OVERLAY_WINDOWS), PackageManager.MATCH_DEFAULT_ONLY).forEach {
                 packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).apply {
                     `package` = it.packageName
@@ -47,7 +48,6 @@ class AppInfoRepository @Inject constructor(val context: Context, private val ap
             } catch (_: Exception) {
             }
         }
-        DebugLog.loge("dlaldsadl: ${entities.size}")
         appInfoDao.insertAppInfos(entities.toList())
     }
 
@@ -73,5 +73,18 @@ class AppInfoRepository @Inject constructor(val context: Context, private val ap
             installSource = applicationInfo.sourceDir,
             apkSize = FileUtil.getBytesSizeInMB(listOf(applicationInfo.sourceDir, *(applicationInfo.splitSourceDirs ?: emptyArray())).sumOf { File(it).length() }),
         )
+    }
+
+    fun getAllAppInfo(): Flow<List<AppInfoEntity>> {
+        val packageManager = BaseApplication.instance.packageManager
+        return appInfoDao.getAllAppInfo().map { it.map { applyIcon(packageManager, it) } }
+    }
+
+    private fun applyIcon(packageManager: PackageManager, appInfoEntity: AppInfoEntity): AppInfoEntity {
+        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) packageManager.getPackageInfo(
+            appInfoEntity.pkgName, PackageManager.PackageInfoFlags.of(0L)
+        ) else packageManager.getPackageInfo(appInfoEntity.pkgName, 0)
+        appInfoEntity.appIcon = packageInfo.applicationInfo?.let { packageManager.getApplicationIcon(it) }
+        return appInfoEntity
     }
 }

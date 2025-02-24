@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import com.mmt.extractor.R
 import com.mmt.extractor.base.BaseFragment
 import com.mmt.extractor.databinding.FragmentHomeBinding
+import com.mmt.extractor.utils.extensions.safeCollect
 import com.mmt.extractor.utils.log.DebugLog
 import dev.androidbroadcast.vbpd.viewBinding
 
@@ -15,7 +16,19 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        DebugLog.loge("dlaldsadl: ")
+        initData()
+        initObserver()
+    }
+
+    private fun initData() {
         homeViewModel.loadData()
+    }
+
+    private fun initObserver() {
+        safeCollect(homeViewModel.appInfoFlow) {
+            it.forEach {
+                DebugLog.loge("dlasdlsadl: $it")
+            }
+        }
     }
 }

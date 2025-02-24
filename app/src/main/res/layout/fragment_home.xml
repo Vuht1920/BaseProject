@@ -1,14 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?home_accent_color">
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/home"
-        android:textSize="48sp"
-        android:textColor="?home_text_main_color" />
-</LinearLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/rl_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:minHeight="@dimen/dp_45"
+                tools:visibility="visible">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_total"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?attr/home_text_main_color"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_search"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="22 apps" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_search"
+                    android:layout_width="@dimen/action_toolbar_icon_size"
+                    android:layout_height="@dimen/action_toolbar_icon_size"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/action_toolbar_icon_padding"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toStartOf="@id/iv_sort"
+                    app:layout_constraintStart_toEndOf="@id/tv_total"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_search_24" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_sort"
+                    android:layout_width="@dimen/action_toolbar_icon_size"
+                    android:layout_height="@dimen/action_toolbar_icon_size"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/action_toolbar_icon_padding"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toStartOf="@id/iv_list_grid"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_sort" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_list_grid"
+                    android:layout_width="@dimen/action_toolbar_icon_size"
+                    android:layout_height="@dimen/action_toolbar_icon_size"
+                    android:layout_gravity="end"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/action_toolbar_icon_padding"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_menu_list" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_apps"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</FrameLayout>

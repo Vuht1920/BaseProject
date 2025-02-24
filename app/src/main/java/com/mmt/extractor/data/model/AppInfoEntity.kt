@@ -1,6 +1,8 @@
 package com.mmt.extractor.data.model
 
+import android.graphics.drawable.Drawable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
@@ -21,4 +23,7 @@ data class AppInfoEntity(
     val updateTime: Long,
     val sourceDir: String,
     val installSource: String?,
-)
+){
+    @Ignore
+    var appIcon: Drawable? = null
+}

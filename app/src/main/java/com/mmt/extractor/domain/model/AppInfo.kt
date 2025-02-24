@@ -1,5 +1,7 @@
 package com.mmt.extractor.domain.model
 
+import android.graphics.drawable.Drawable
+
 data class AppInfo(
     val id: Long = 0,
     val appName: String,
@@ -15,4 +17,5 @@ data class AppInfo(
     val updateTime: Long,
     val sourceDir: String,
     val installSource: String?,
+    val appIcon: Drawable? = null
 )
