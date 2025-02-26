@@ -11,4 +11,19 @@
     <string name="msg_empty_data">No data!</string>
     <string name="txt_app">app</string>
     <string name="txt_apps">apps</string>
+    <string name="txt_export">Export</string>
+    <string name="txt_app_information">App Information</string>
+    <string name="txt_apk_size">APK size:</string>
+    <string name="txt_version_number">Version number:</string>
+    <string name="txt_version_name">Version name:</string>
+    <string name="txt_min_sdk">Min SDK:</string>
+    <string name="txt_target_sdk">Target SDK:</string>
+    <string name="txt_category">Category:</string>
+    <string name="txt_installed">Installed:</string>
+    <string name="txt_last_updated">Last updated:</string>
+    <string name="txt_package_name">Package name:</string>
+    <string name="txt_source_apk">Source APK:</string>
+    <string name="txt_save_icon">Save icon</string>
+    <string name="txt_open">Open</string>
+    <string name="txt_uninstall">Uninstall</string>
 </resources>

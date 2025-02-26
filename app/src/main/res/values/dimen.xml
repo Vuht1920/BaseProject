@@ -3,5 +3,6 @@
     <dimen name="action_toolbar_icon_size">40dp</dimen>
     <dimen name="action_toolbar_icon_padding">8dp</dimen>
     <dimen name="app_preview">48dp</dimen>
+    <dimen name="item_menu_height">36dp</dimen>
 
 </resources>
