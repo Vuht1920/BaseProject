@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/yellow"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    tools:background="@color/white">
+
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:id="@+id/collapse_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:expandedTitleGravity="bottom|center_horizontal"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="100dp"
+            android:scaleType="centerCrop"
+            android:src="@color/yellow"
+            app:layout_collapseMode="parallax" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/white"
+            android:gravity="center"
+            app:layout_collapseMode="parallax">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="100dp"
+                android:scaleType="centerCrop"
+                android:src="@color/colorPrimaryDark"
+                app:layout_collapseMode="parallax" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_app_preview"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
+                android:layout_centerHorizontal="true"
+                app:srcCompat="@drawable/app_icon_splash" />
+
+            <com.mmt.extractor.ui.custom.MarqueTextView
+                android:id="@+id/tv_app_names"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iv_app_preview"
+                android:maxLines="1"
+                android:text="Extractor"
+                android:textAlignment="textStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?home_text_main_color" />
+
+            <com.mmt.extractor.ui.custom.MarqueTextView
+                android:id="@+id/tv_app_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_app_names"
+                android:layout_gravity="end|center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="com.mmt"
+                android:textColor="?home_text_second_color" />
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ToolBarStyle"
+            app:contentInsetStartWithNavigation="0dp"
+            app:layout_collapseMode="pin"
+            app:navigationIcon="?android:attr/homeAsUpIndicator"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+</LinearLayout>

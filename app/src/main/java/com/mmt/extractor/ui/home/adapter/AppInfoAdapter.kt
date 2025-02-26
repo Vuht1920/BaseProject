@@ -5,12 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.mmt.extractor.databinding.ItemAppBinding
 import com.mmt.extractor.domain.model.AppInfo
 import java.util.Locale
 
-class AppInfoAdapter : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
+class AppInfoAdapter(val itemClickCallback: (AppInfo) -> Unit) : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
     class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.id == newItem.id
@@ -29,7 +28,14 @@ class AppInfoAdapter : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDi
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: ItemAppBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemAppBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                getItem(adapterPosition)?.let {
+                    itemClickCallback(it)
+                }
+            }
+        }
 
         fun bind(appInfo: AppInfo) {
             with(binding) {
