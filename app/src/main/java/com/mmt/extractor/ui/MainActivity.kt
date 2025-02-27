@@ -69,8 +69,6 @@ class MainActivity : BaseActivity(), AdOPAListener {
 
         // Init Ads module
         initAdsModule()
-
-
     }
 
     private fun initView() {

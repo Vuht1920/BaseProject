@@ -2,6 +2,7 @@ package com.mmt.extractor.ui.home.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +10,7 @@ import com.mmt.extractor.databinding.ItemAppBinding
 import com.mmt.extractor.domain.model.AppInfo
 import java.util.Locale
 
-class AppInfoAdapter(val itemClickCallback: (AppInfo) -> Unit) : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
+class AppInfoAdapter(val itemClickCallback: (Pair<AppInfo, ImageView>) -> Unit) : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
     class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.id == newItem.id
@@ -32,7 +33,7 @@ class AppInfoAdapter(val itemClickCallback: (AppInfo) -> Unit) : ListAdapter<App
         init {
             binding.root.setOnClickListener {
                 getItem(adapterPosition)?.let {
-                    itemClickCallback(it)
+                    itemClickCallback(it to binding.ivAppPreview)
                 }
             }
         }

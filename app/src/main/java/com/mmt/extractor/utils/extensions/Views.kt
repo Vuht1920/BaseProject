@@ -19,6 +19,9 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
 import com.mmt.extractor.R
 import com.mmt.extractor.utils.log.DebugLog
@@ -192,4 +195,33 @@ fun EditText?.focusEdittext() {
         this.dispatchTouchEvent(MotionEvent.obtain(uptimeMillis + 50, uptimeMillis + 50, MotionEvent.ACTION_UP, endOf, 0f, 0));
         this.setSelection(this.text.length)
     }, 100)
+}
+
+fun AppBarLayout.animationScroll(contentView: ViewGroup, toolbarLayout: CollapsingToolbarLayout, title: String) {
+    this.addOnOffsetChangedListener(object : OnOffsetChangedListener {
+        var isShow: Boolean = true
+        var scrollRange: Int = -1
+        var isContentViewShowed: Boolean = true
+
+        override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
+            if (scrollRange == -1) {
+                scrollRange = appBarLayout.totalScrollRange
+            }
+            if (scrollRange + verticalOffset == 0) {
+                toolbarLayout.setTitle(title)
+                isShow = true
+            } else if (isShow) {
+                toolbarLayout.setTitle(" ") //careful there should a space between double quote otherwise it wont work
+                isShow = false
+            }
+
+            if (-verticalOffset > scrollRange / 2) {
+                contentView.animate().alpha(0f)
+                isContentViewShowed = true
+            } else if (isContentViewShowed) {
+                contentView.animate().alpha(1f) //careful there should a space between double quote otherwise it wont work
+                isContentViewShowed = false
+            }
+        }
+    })
 }
