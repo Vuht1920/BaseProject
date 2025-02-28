@@ -15,17 +15,22 @@
             app:destination="@id/historyFragment" />
         <action
             android:id="@+id/toDetailActivity"
-            app:destination="@id/detailActivity" />
+            app:destination="@id/detailActivity">
+            <argument
+                android:name="app_info_id"
+                app:argType="long"
+                android:defaultValue="-1L" />
+        </action>
     </fragment>
 
     <activity
         android:id="@+id/detailActivity"
         android:name="com.mmt.extractor.ui.detail.DetailActivity"
         tools:layout="@layout/activity_detail">
-        <argument
-            android:name="app_info_id"
-            app:argType="long"
-            android:defaultValue="-1L" />
+<!--        <argument-->
+<!--            android:name="app_info_id"-->
+<!--            app:argType="long"-->
+<!--            android:defaultValue="-1L" />-->
     </activity>
 
 </navigation>

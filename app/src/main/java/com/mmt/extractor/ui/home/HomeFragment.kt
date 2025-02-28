@@ -14,16 +14,18 @@ import com.mmt.extractor.ui.home.adapter.AppInfoAdapter
 import com.mmt.extractor.utils.extensions.gone
 import com.mmt.extractor.utils.extensions.safeCollect
 import com.mmt.extractor.utils.extensions.visible
+import dagger.hilt.android.AndroidEntryPoint
 import dev.androidbroadcast.vbpd.viewBinding
 import java.util.Locale
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private val homeViewModel: HomeViewModel by viewModels()
     private val binding: FragmentHomeBinding by viewBinding(FragmentHomeBinding::bind)
     private val appInfoAdapter by lazy {
         AppInfoAdapter { pair ->
             val extras = FragmentNavigatorExtras(pair.second to DetailActivity.TRANSITION_NAME)
-            findNavController().navigate(HomeFragmentDirections.toDetailActivity(), null, extras)
+            findNavController().navigate(HomeFragmentDirections.toDetailActivity(pair.first), null, extras)
         }
     }
 

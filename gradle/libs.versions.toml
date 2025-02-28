@@ -35,7 +35,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 devtoolsKsp = { id = "com.google.devtools.ksp", version.ref = "googleKsp" }
-nav-safe-args = { id = "androidx.navigation.safeargs", version.ref = "safeargs" }
+nav-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safeargs" }
 
 hilt_android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 

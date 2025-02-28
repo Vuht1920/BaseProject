@@ -5,7 +5,9 @@ import com.mmt.extractor.R
 import com.mmt.extractor.base.BaseActivity
 import com.mmt.extractor.databinding.ActivityDetailBinding
 import com.mmt.extractor.utils.extensions.animationScroll
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailActivity : BaseActivity() {
     companion object {
         const val TRANSITION_NAME = "app_icon"
