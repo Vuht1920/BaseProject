@@ -65,7 +65,7 @@
                         android:layout_width="@dimen/dp_72"
                         android:layout_height="@dimen/dp_72"
                         android:scaleType="centerCrop"
-                        android:transitionName="app_preview11"
+                        android:transitionName="app_icon"
                         app:srcCompat="@drawable/app_icon_splash" />
 
                     <com.mmt.extractor.ui.custom.MarqueTextView

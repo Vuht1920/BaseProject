@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.devtoolsKsp) apply false
 //    alias(libs.plugins.jetbrains.kotlin.serialization) apply false
+    alias(libs.plugins.nav.safe.args) apply false
 }

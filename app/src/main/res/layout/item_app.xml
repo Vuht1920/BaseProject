@@ -12,7 +12,7 @@
         android:layout_width="@dimen/app_preview"
         android:layout_height="@dimen/app_preview"
         android:layout_centerVertical="true"
-        android:transitionName="app_preview" />
+        android:transitionName="app_icon" />
 
     <LinearLayout
         android:id="@+id/ll_item_info"

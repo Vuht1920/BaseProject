@@ -1,16 +1,15 @@
 package com.mmt.extractor.ui.home
 
-import android.app.ActivityOptions
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.mmt.extractor.R
 import com.mmt.extractor.base.BaseFragment
 import com.mmt.extractor.databinding.FragmentHomeBinding
 import com.mmt.extractor.domain.model.AppInfo
-import com.mmt.extractor.ui.TestActivity
+import com.mmt.extractor.ui.detail.DetailActivity
 import com.mmt.extractor.ui.home.adapter.AppInfoAdapter
 import com.mmt.extractor.utils.extensions.gone
 import com.mmt.extractor.utils.extensions.safeCollect
@@ -22,12 +21,9 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private val homeViewModel: HomeViewModel by viewModels()
     private val binding: FragmentHomeBinding by viewBinding(FragmentHomeBinding::bind)
     private val appInfoAdapter by lazy {
-        AppInfoAdapter {
-            val extras = FragmentNavigatorExtras(it.second to "app_preview11")
-//            Navigation.findNavController(it.second).navigate(R.id.toDetailFragment, null, null, extras)
-            val intent = Intent(context, TestActivity::class.java)
-            val transitionActivityOptions: ActivityOptions = ActivityOptions.makeSceneTransitionAnimation(activity, it.second, "app_preview11")
-            requireContext().startActivity(intent, transitionActivityOptions.toBundle())
+        AppInfoAdapter { pair ->
+            val extras = FragmentNavigatorExtras(pair.second to DetailActivity.TRANSITION_NAME)
+            findNavController().navigate(HomeFragmentDirections.toDetailActivity(), null, extras)
         }
     }
 
@@ -39,6 +35,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     }
 
     private fun initView() {
+        binding.rvApps.setHasFixedSize(true)
         binding.rvApps.adapter = appInfoAdapter
     }
 

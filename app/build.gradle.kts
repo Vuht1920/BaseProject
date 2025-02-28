@@ -8,6 +8,9 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.devtoolsKsp)
+    alias(libs.plugins.nav.safe.args)
+    // Kotlin serialization plugin for type safe routes and navigation arguments
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 val versions = rootProject.file("version.properties")
@@ -126,6 +129,9 @@ dependencies {
 
     // Swipe refresh layout
     implementation(libs.androidx.swiperefreshlayout)
+
+    // JSON serialization library, works with the Kotlin serialization plugin
+    implementation(libs.kotlinx.serialization.json)
 
     // Standard dependencies
     dependOn(

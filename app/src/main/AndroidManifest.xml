@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.TestActivity" />
+        <activity android:name=".ui.detail.DetailActivity" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

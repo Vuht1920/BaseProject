@@ -10,7 +10,7 @@ import com.mmt.extractor.databinding.ItemAppBinding
 import com.mmt.extractor.domain.model.AppInfo
 import java.util.Locale
 
-class AppInfoAdapter(val itemClickCallback: (Pair<AppInfo, ImageView>) -> Unit) : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
+class AppInfoAdapter(val itemClickCallback: (Pair<Long, ImageView>) -> Unit) : ListAdapter<AppInfo, AppInfoAdapter.ViewHolder>(AppInfoDiffCallback()) {
     class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
         override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
             return oldItem.id == newItem.id
@@ -33,7 +33,7 @@ class AppInfoAdapter(val itemClickCallback: (Pair<AppInfo, ImageView>) -> Unit) 
         init {
             binding.root.setOnClickListener {
                 getItem(adapterPosition)?.let {
-                    itemClickCallback(it to binding.ivAppPreview)
+                    itemClickCallback(it.id to binding.ivAppPreview)
                 }
             }
         }

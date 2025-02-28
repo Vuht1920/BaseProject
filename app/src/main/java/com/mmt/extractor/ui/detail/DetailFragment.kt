@@ -5,13 +5,12 @@ import android.transition.TransitionInflater
 import android.view.View
 import com.mmt.extractor.R
 import com.mmt.extractor.base.BaseFragment
-import com.mmt.extractor.databinding.FragmentDetailBinding
+import com.mmt.extractor.databinding.ActivityDetailBinding
 import com.mmt.extractor.utils.extensions.animationScroll
 import dev.androidbroadcast.vbpd.viewBinding
 
-class DetailFragment : BaseFragment(R.layout.fragment_detail) {
-    private val binding by viewBinding(FragmentDetailBinding::bind)
-
+class DetailFragment : BaseFragment(R.layout.activity_detail) {
+    private val binding by viewBinding(ActivityDetailBinding::bind)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val animation = TransitionInflater.from(requireContext()).inflateTransition(

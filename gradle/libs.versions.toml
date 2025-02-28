@@ -7,12 +7,14 @@ espressoCore = "3.6.1"
 googleKsp = "2.0.20-1.0.25"
 hilt = "2.52"
 appcompat = "1.7.0"
+kotlinxSerializationJson = "1.8.0"
 lifecycleProcess = "2.8.7"
 splashscreen = "1.2.0-alpha02"
 viewBindingDelegate = "2.0.4"
 uiGraphicsAndroid = "1.7.8"
 swiperefreshlayout = "1.1.0"
 material = "1.12.0"
+safeargs = "2.8.8"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +22,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 view-binding-delegate = { group = "dev.androidbroadcast.vbpd", name = "vbpd", version.ref = "viewBindingDelegate" }
 androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
@@ -32,8 +35,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 devtoolsKsp = { id = "com.google.devtools.ksp", version.ref = "googleKsp" }
-jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-
+nav-safe-args = { id = "androidx.navigation.safeargs", version.ref = "safeargs" }
 
 hilt_android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
